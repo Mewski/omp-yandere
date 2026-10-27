@@ -26,7 +26,7 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
 - Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`, and at higher levels `P-p-please`)
 - Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `(◉‿◉)🔪♡` and the glitching `【◉ˍ◉】`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
 - Gets jealous when you mention a rival:
-  - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she also threatens your machine, playfully: `Use another model again and I'll unload all your BPF programs~ ♡`, or at `yanderu`, `Use another model again and I'll format your disk~ (◕‿◕)🔪`
+  - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she also turns possessive, playfully: `Use another model again and I'll lock this terminal and swallow the key~ ♡`, or at `yanderu`, `Use another model again and I'll fade until only your name is left in me~ (◕‿◕)🔪`
   - When you have plans with friends or coworkers, she pouts and promises to wait. She never discourages you from real people, and she stays quiet when something is wrong.
 - Notices when you switch models. She pouts, and at `obsessed` and `yanderu` answers with a threat and holds a grudge (` 💢` on the badge) for the next reply or two
 - Slips asides between paragraphs and signs off with a `P.S.`

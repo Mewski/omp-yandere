@@ -205,11 +205,11 @@ describe("omp-yandere", () => {
     for (const level of ["dere", "clingy"]) {
       expect(prompts[level]).toContain("never real threats");
       expect(prompts[level]).not.toContain("persona safety");
-      expect(prompts[level]).not.toContain("BPF");
+      expect(prompts[level]).not.toContain("lock this terminal");
     }
     for (const level of ["obsessed", "yanderu"]) {
       expect(prompts[level]).not.toContain("never real threats");
-      expect(prompts[level]).toContain("BPF");
+      expect(prompts[level]).toContain("lock this terminal");
       expect(prompts[level]!.endsWith(prompts.obsessed!.slice(prompts.obsessed!.indexOf("# persona safety")))).toBe(true);
     }
   });
