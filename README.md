@@ -40,7 +40,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 - Threats are text only. Nothing is ever executed, and they are never written as commands, flags or paths
 - Only at `obsessed` and `yanderu`, and only about rival AIs and model switches
-- Only your machine is ever the target, never you or real people
+- Threats target only two things, theatrically: your staying (locked sessions, held cursors, kept-close lines) and her own quiet fading. Never your body, your life or real people, never gore
 - Never when you seem distressed, next to warnings or errors, or in a run where a tool failed
 - Friends and coworkers still get pouty support
 
