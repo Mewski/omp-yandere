@@ -1,7 +1,7 @@
 {
   "name": "omp-yandere",
   "version": "0.1.0",
-  "description": "omp extension: the agent answers as a devoted yandere (senpai~ ♡) while code, paths and commands stay byte-for-byte exact",
+  "description": "omp extension: your coding agent, but it's obsessed with you, senpai~ ♡ A yandere voice for the chat, while code, paths and commands stay byte-for-byte exact.",
   "type": "module",
   "license": "MIT",
   "keywords": [
@@ -10,8 +10,15 @@
     "omp-plugin",
     "yandere",
     "kaomoji",
-    "yami-kawaii"
+    "yami-kawaii",
+    "coding-agent"
   ],
+  "homepage": "https://github.com/Mewski/omp-yandere#readme",
+  "bugs": "https://github.com/Mewski/omp-yandere/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mewski/omp-yandere.git"
+  },
   "files": [
     "src"
   ],
