@@ -8,7 +8,9 @@ import { stripTerminalSequences, visibleWidth, type TUI } from "@oh-my-pi/pi-tui
 import type { KeybindingsManager } from "@oh-my-pi/pi-tui/app-keybindings";
 import { installBlush } from "../src/blush.ts";
 import yandereExtension from "../src/index.ts";
-import { yanderify, yanderifyProse } from "../src/yandere.ts";
+import { createStatusCard } from "../src/status.ts";
+import { buildYamiKawaiiTheme } from "../src/theme.ts";
+import { DERE_LEVELS, type DereLevel, yanderify, yanderifyProse } from "../src/yandere.ts";
 
 type Handler = (...args: unknown[]) => unknown;
 type Command = (args: string, ctx: unknown) => Promise<void>;
@@ -175,7 +177,7 @@ describe("/yandere status dashboard", () => {
     const controls = component.render(80).join("\n");
     expect(controls).toContain(theme.bg("selectedBg", theme.fg("accent", theme.bold("[ Controls ]"))));
     expect(controls).toContain(theme.bg("selectedBg", theme.fg("accent", theme.bold("[ obsessed ]"))));
-    expect(content(component)).toContain("Yandere settings ♡");
+    expect(content(component)).toContain("Yandere settings");
     expect(content(component)).toContain("Obsession");
     expect(content(component)).toContain("Yami colors");
     expect(content(component)).toContain("♥♥♡");
@@ -479,21 +481,35 @@ describe("/yandere status dashboard", () => {
 });
 
 describe("obsession meter layout", () => {
+  const statusFor = (level: DereLevel) => ({
+    enabled: true, style: "rewrite", level, locale: "auto", colorsEnabled: true,
+    rewrite: "available", display: "available", nativeDisplay: "available", promptFallback: false,
+  }) as const;
+
   test("the four level chips and the heart meter fit one row of the full-width card", async () => {
-    const { createStatusCard } = await import("../src/status.ts");
     const theme = await getThemeByName("dark") as Theme;
     const heights = new Set<number>();
-    for (const level of ["dere", "clingy", "obsessed", "yanderu"] as const) {
-      const card = createStatusCard({
-        enabled: true, style: "rewrite", level, locale: "auto", colorsEnabled: true,
-        rewrite: "available", display: "available", nativeDisplay: "available", promptFallback: false,
-      }, theme, () => {}, () => {});
+    for (const level of DERE_LEVELS) {
+      const card = createStatusCard(statusFor(level), theme, () => {}, () => {});
       const lines = card.render(68);
       heights.add(lines.length);
       const row = stripTerminalSequences(lines.find((line) => line.includes("Obsession"))!);
       expect(row).toMatch(/\[ yanderu \] [♥♡]{3} │$/);
+      expect(row).toContain(`${"♥".repeat(DERE_LEVELS.indexOf(level))}${"♡".repeat(3 - DERE_LEVELS.indexOf(level))}`);
       for (const line of lines) expect(visibleWidth(line)).toBe(68);
+      for (const width of [12, 24, 48]) {
+        expect({ level, width, fits: card.render(width).every((line) => visibleWidth(line) === width) }).toEqual({ level, width, fits: true });
+      }
     }
     expect(heights.size).toBe(1);
+  });
+
+  test("filled hearts bleed crimson only at yanderu", async () => {
+    const yami = buildYamiKawaiiTheme(Theme, await getThemeByName("dark") as Theme);
+    expect(yami.getFgAnsi("mdListBullet")).not.toBe(yami.getFgAnsi("accent"));
+    const render = (level: DereLevel) => createStatusCard(statusFor(level), yami, () => {}, () => {}).render(68).join("\n");
+    expect(render("yanderu")).toContain(yami.fg("mdListBullet", "♥♥♥"));
+    expect(render("obsessed")).toContain(yami.fg("accent", "♥♥"));
+    expect(render("obsessed")).not.toContain(yami.fg("mdListBullet", "♥♥"));
   });
 });

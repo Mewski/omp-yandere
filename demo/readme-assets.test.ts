@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { DERE_LEVELS } from "../src/yandere.ts";
-import { buildHero, buildObsessionChart, buildStyleMap, CORPUS, MEDIA, measureLevel, technicalSpans } from "./readme-assets";
+import { DERE_LEVELS, type DereLevel } from "../src/yandere.ts";
+import { buildHero, buildObsessionChart, buildStyleMap, CORPUS, MEDIA, measureLevel, technicalSpans, tokenMarks } from "./readme-assets";
 
 const panels = [
   ["readme-hero.svg", buildHero, 300],
@@ -45,7 +45,33 @@ describe("README artwork", () => {
 
   test("a changed code span is reported, not hidden", () => {
     const broken = { ...measureLevel("obsessed"), exact: false };
-    expect(buildObsessionChart([broken, broken, broken, broken])).toContain("✗ a code span changed");
+    expect(buildObsessionChart(DERE_LEVELS.map(() => broken))).toContain("✗ a code span changed");
+  });
+
+  test("the chart lays out any number of levels and highlights the top one", () => {
+    const marks = { faces: 0, senpai: 0, hearts: 0, stretches: 0, tildes: 0, stutters: 0 };
+    const ladder = (count: number) => Array.from({ length: count }, (_, index) =>
+      ({ level: `level-${index}` as DereLevel, words: 100, marks, perHundred: index, exact: true }));
+    const height = (svg: string) => Number(/viewBox="0 0 960 (\d+)"/.exec(svg)![1]);
+    const four = buildObsessionChart(ladder(4));
+    const six = buildObsessionChart(ladder(6));
+    expect(height(six) - height(four)).toBe(2 * 62);
+    for (let index = 0; index < 6; index++) expect(six).toContain(`id="bar-level-${index}"`);
+    expect([...six.matchAll(/class="mono pink"[^>]*>([^<]+)</g)].map((match) => match[1])).toEqual(["level-5"]);
+    // The footer stays inside the panel, below the last bar's caption.
+    const lastCaption = Math.max(...[...six.matchAll(/class="mono muted" x="250" y="(\d+)"/g)].map((match) => Number(match[1])));
+    const footer = Number(/y="(\d+)" font-size="14">Deterministic/.exec(six)![1]);
+    expect(footer).toBeGreaterThan(lastCaption);
+    expect(footer).toBeLessThan(height(six));
+  });
+
+  test("caps outbursts and double stutters are classified, not miscounted", () => {
+    expect(tokenMarks("really", "REAAAALLY")).toEqual(["stretches"]);
+    expect(tokenMarks("really", "reaaally")).toEqual(["stretches"]);
+    expect(tokenMarks("please", "P-p-please")).toEqual(["stutters"]);
+    expect(tokenMarks("Please", "P-please")).toEqual(["stutters"]);
+    expect(tokenMarks("you.", "YOUUU♡~")).toEqual(["hearts", "stretches", "tildes"]);
+    expect(tokenMarks("Sooo", "SOOO")).toEqual([]);
   });
 
   test("mode diagram is illustrative and discloses the rewrite fallback", () => {

@@ -3,7 +3,7 @@ import { Loader, TUI } from "@oh-my-pi/pi-tui";
 import type { DescribeContext } from "@oh-my-pi/pi-tui/native/node";
 import { Reconciler } from "@oh-my-pi/pi-tui/native/reconcile";
 import { installNativeStalker } from "../src/native-stalker.ts";
-import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES, stalkerPoseAt } from "../src/theme.ts";
+import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES, stalkerPoseAt, stalkerPoseMs } from "../src/theme.ts";
 import { Theme } from "@oh-my-pi/pi-coding-agent";
 
 const base = new Theme({} as never, {} as never, "truecolor", "unicode", {});
@@ -20,10 +20,11 @@ afterEach(() => {
   originalRequest = undefined;
 });
 
-function setup(pose: (now: number) => string | undefined, roaming = false) {
+function setup(pose: (now: number) => string | undefined, roaming = false, period = () => STALKER_POSE_MS) {
   let native = true;
   let now = 0;
   let timer: (() => void) | undefined;
+  let delay: number | undefined;
   let canceled = false;
   let renders = 0;
   const host = { Loader, TUI, isNativeRendering: () => native };
@@ -32,13 +33,14 @@ function setup(pose: (now: number) => string | undefined, roaming = false) {
   const originalDescribe = Loader.prototype.describe;
   const animationClock = {
     now: () => now,
-    schedule: (callback: () => void) => {
+    schedule: (callback: () => void, after: number) => {
       timer = callback;
+      delay = after;
       canceled = false;
       return () => { canceled = true; timer = undefined; };
     },
   };
-  installed = installNativeStalker(host, { periodMs: STALKER_POSE_MS, pose }, animationClock);
+  installed = installNativeStalker(host, { get periodMs() { return period(); }, pose }, animationClock);
   const ui = Object.create(TUI.prototype) as TUI;
   const writes: string[] = [];
   ui.terminal = { write: (data: string) => { writes.push(data); } } as unknown as TUI["terminal"];
@@ -51,7 +53,7 @@ function setup(pose: (now: number) => string | undefined, roaming = false) {
     loader, ui, cx, host, animationClock, writes,
     original: () => originalDescribe.call(loader, cx),
     tick(at: number) { now = at; timer?.(); },
-    get canceled() { return canceled; }, get renders() { return renders; },
+    get canceled() { return canceled; }, get renders() { return renders; }, get delay() { return delay; },
     setNative(value: boolean) { native = value; },
   };
 }
@@ -174,5 +176,43 @@ describe("native stalker", () => {
     installed.dispose();
     expect(state.canceled).toBe(true);
     expect(state.loader.describe(state.cx).c?.[0]).toMatchObject({ k: "spinner", key: "spinner" });
+  });
+
+  test("reads the period on every use, so repaints follow a level change", () => {
+    let period = STALKER_POSE_MS;
+    const state = setup((now) => stalkerPoseAt(stalkerTheme, now), false, () => period);
+    state.loader.describe(state.cx);
+    expect(state.delay).toBe(STALKER_POSE_MS);
+    period = stalkerPoseMs("yanderu");
+    state.tick(period * 2 + 30);
+    state.loader.describe(state.cx);
+    expect(state.delay).toBe(period - 30);
+  });
+
+  test("re-emits roam timings only when the period changed, keeping reduced motion", () => {
+    let period = stalkerPoseMs("clingy");
+    const state = setup((now) => stalkerPoseAt(stalkerTheme, now), true, () => period);
+    const timing = (css: string) => ({
+      beat: Number(/yandere-stalker-heartbeat (\d+)ms/.exec(css)?.[1]),
+      creep: Number(/yandere-stalker-creep ([\d.]+)s/.exec(css)?.[1]),
+    });
+    state.loader.describe(state.cx);
+    expect(state.writes).toHaveLength(1);
+    const calm = timing(state.writes[0]!);
+    expect(calm.beat).toBe(period * 2);
+    installed!.refresh();
+    state.loader.describe(state.cx);
+    expect(state.writes).toHaveLength(1);
+
+    period = stalkerPoseMs("yanderu");
+    installed!.refresh();
+    expect(state.writes).toHaveLength(2);
+    const frantic = timing(state.writes[1]!);
+    expect(frantic.beat).toBe(period * 2);
+    expect(frantic.creep).toBeLessThan(calm.creep);
+    expect(state.writes[1]).toContain('"name":"omp-yandere-stalker"');
+    expect(state.writes[1]).toContain("prefers-reduced-motion");
+    state.loader.describe(state.cx);
+    expect(state.writes).toHaveLength(2);
   });
 });

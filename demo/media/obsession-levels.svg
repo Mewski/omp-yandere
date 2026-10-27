@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="470" viewBox="0 0 960 470" role="img" aria-labelledby="title desc" style="width:100%;height:auto;max-width:960px">
   <title id="title">Obsession levels — persona marks per 100 words, measured on demo/transcripts/corpus.md</title>
-  <desc id="desc">Measured at generation time by running yanderify over demo/transcripts/corpus.md (196 words) at each level. Marks per 100 words: dere 1.5, clingy 5.1, obsessed 11.2, yanderu 14.8. Code spans and fenced blocks preserved byte-for-byte at every level: yes.</desc>
+  <desc id="desc">Measured at generation time by running yanderify over demo/transcripts/corpus.md (196 words) at each level. Marks per 100 words: dere 1.5, clingy 11.7, obsessed 16.3, yanderu 21.4. Code spans and fenced blocks preserved byte-for-byte at every level: yes.</desc>
   <defs><pattern id="bar-dither" width="8" height="8" patternUnits="userSpaceOnUse"><g fill="#ff4f8b" shape-rendering="crispEdges"><rect x="0" y="0" width="2" height="2"/><rect x="4" y="0" width="2" height="2"/><rect x="2" y="2" width="2" height="2"/><rect x="6" y="2" width="2" height="2"/><rect x="0" y="4" width="2" height="2"/><rect x="4" y="4" width="2" height="2"/><rect x="2" y="6" width="2" height="2"/><rect x="6" y="6" width="2" height="2"/></g></pattern></defs>
   <style>
     text { fill: #fbe9f1; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -21,25 +21,25 @@
   <text class="mono muted" x="40" y="128" font-size="15" letter-spacing="1">LEVEL</text>
   <text class="mono muted" x="250" y="128" font-size="15" letter-spacing="1">PERSONA MARKS PER 100 WORDS</text>
   <text class="mono " x="40" y="170" font-size="22">dere</text>
-  <rect id="bar-dere" x="250" y="150" width="42" height="26" fill="#2b0f1c"/>
-  <rect x="250" y="150" width="42" height="26" fill="url(#bar-dither)"/>
-  <text class="mono" x="304" y="170" font-size="20">1.5</text>
+  <rect id="bar-dere" x="250" y="150" width="28" height="26" fill="#2b0f1c"/>
+  <rect x="250" y="150" width="28" height="26" fill="url(#bar-dither)"/>
+  <text class="mono" x="290" y="170" font-size="20">1.5</text>
   <text class="mono muted" x="250" y="196" font-size="14">3 faces · 0 senpai · 0 hearts · 0 stretches · 0 tildes · 0 stutters</text>
   <text class="mono " x="40" y="232" font-size="22">clingy</text>
-  <rect id="bar-clingy" x="250" y="212" width="142.8" height="26" fill="#2b0f1c"/>
-  <rect x="250" y="212" width="142.8" height="26" fill="url(#bar-dither)"/>
-  <text class="mono" x="404.8" y="232" font-size="20">5.1</text>
-  <text class="mono muted" x="250" y="258" font-size="14">1 faces · 0 senpai · 1 hearts · 5 stretches · 1 tildes · 2 stutters</text>
+  <rect id="bar-clingy" x="250" y="212" width="218.4" height="26" fill="#2b0f1c"/>
+  <rect x="250" y="212" width="218.4" height="26" fill="url(#bar-dither)"/>
+  <text class="mono" x="480.4" y="232" font-size="20">11.7</text>
+  <text class="mono muted" x="250" y="258" font-size="14">2 faces · 1 senpai · 3 hearts · 12 stretches · 3 tildes · 2 stutters</text>
   <text class="mono " x="40" y="294" font-size="22">obsessed</text>
-  <rect id="bar-obsessed" x="250" y="274" width="313.6" height="26" fill="#2b0f1c"/>
-  <rect x="250" y="274" width="313.6" height="26" fill="url(#bar-dither)"/>
-  <text class="mono" x="575.6" y="294" font-size="20">11.2</text>
-  <text class="mono muted" x="250" y="320" font-size="14">2 faces · 1 senpai · 3 hearts · 11 stretches · 3 tildes · 2 stutters</text>
+  <rect id="bar-obsessed" x="250" y="274" width="304.3" height="26" fill="#2b0f1c"/>
+  <rect x="250" y="274" width="304.3" height="26" fill="url(#bar-dither)"/>
+  <text class="mono" x="566.3" y="294" font-size="20">16.3</text>
+  <text class="mono muted" x="250" y="320" font-size="14">4 faces · 1 senpai · 4 hearts · 14 stretches · 5 tildes · 4 stutters</text>
   <text class="mono pink" x="40" y="356" font-size="22">yanderu</text>
-  <rect id="bar-yanderu" x="250" y="336" width="414.4" height="26" fill="#2b0f1c"/>
-  <rect x="250" y="336" width="414.4" height="26" fill="url(#bar-dither)"/>
-  <text class="mono" x="676.4" y="356" font-size="20">14.8</text>
-  <text class="mono muted" x="250" y="382" font-size="14">4 faces · 1 senpai · 4 hearts · 11 stretches · 5 tildes · 4 stutters</text>
+  <rect id="bar-yanderu" x="250" y="336" width="399.5" height="26" fill="#2b0f1c"/>
+  <rect x="250" y="336" width="399.5" height="26" fill="url(#bar-dither)"/>
+  <text class="mono" x="661.5" y="356" font-size="20">21.4</text>
+  <text class="mono muted" x="250" y="382" font-size="14">7 faces · 4 senpai · 6 hearts · 14 stretches · 7 tildes · 4 stutters</text>
   <path class="rule" d="M40 405.5H920"/>
   <text class="mono blush" x="40" y="436" font-size="18">✓ every code span and fenced block byte-for-byte unchanged, at every level</text>
   <text class="muted" x="40" y="459" font-size="14">Deterministic: re-running bun demo/readme-assets.ts reproduces these numbers exactly.</text>

@@ -7,7 +7,8 @@ type Host = {
   TUI?: { prototype: TUI };
   isNativeRendering?: () => boolean;
 };
-type Control = { periodMs: number; pose(now: number): string | undefined };
+/** `periodMs` is read on every use, so callers may pass a getter that follows the level. */
+type Control = { readonly periodMs: number; pose(now: number): string | undefined };
 type Clock = { now(): number; schedule(callback: () => void, delay: number): () => void };
 const clock: Clock = {
   now: Date.now,
@@ -21,8 +22,10 @@ const clock: Clock = {
 // She follows senpai everywhere: the peeking face creeps along the pane walls
 // while its heart beats. Tern owns the animation clock and pane geometry. A
 // non-modal, hoisted overlay leaves the working label and keyboard/pointer
-// targets untouched.
-const ROAM_STYLES = `
+// targets untouched. Timings follow the pose period: the heart alternates
+// poses 0 and 1 every period, and a faster stalker also creeps faster (a lap
+// takes 250 periods: 60s at 240ms, 20s at 80ms).
+const roamStyles = (periodMs: number) => `
 [data-role="yandere.stalker.roam"] {
   position: absolute; inset: 0; width: 100% !important; height: 100% !important;
   max-width: none !important; max-height: none !important; padding: 0; pointer-events: none;
@@ -43,12 +46,12 @@ const ROAM_STYLES = `
   position: absolute; left: 0; top: calc(100% - 3em);
   font-size: 16px; width: 7em; height: 3em; pointer-events: none;
 }
-[data-role="yandere.stalker.creep"] { animation: yandere-stalker-creep 60s linear infinite; }
+[data-role="yandere.stalker.creep"] { animation: yandere-stalker-creep ${periodMs / 4}s linear infinite; }
 [data-role="yandere.stalker.pose"], [data-role="yandere.stalker.beat"] {
   position: absolute; left: 0; top: 0.75em; width: 7em; height: 1.5em;
-  pointer-events: none; animation: yandere-stalker-heartbeat 480ms steps(1, end) infinite;
+  pointer-events: none; animation: yandere-stalker-heartbeat ${periodMs * 2}ms steps(1, end) infinite;
 }
-[data-role="yandere.stalker.beat"] { opacity: 0; animation-delay: -240ms; }
+[data-role="yandere.stalker.beat"] { opacity: 0; animation-delay: -${periodMs}ms; }
 @keyframes yandere-stalker-heartbeat {
   0%, 100% { opacity: 1; transform: translateY(0); }
   50% { opacity: 0; transform: translateY(-1px); }
@@ -65,6 +68,8 @@ const ROAM_STYLES = `
   [data-role="yandere.stalker.creep"], [data-role="yandere.stalker.pose"], [data-role="yandere.stalker.beat"] { animation: none; }
 }
 `;
+const emitStyles = (owner: TUI, css: string) =>
+  owner.terminal.write(`\x1b_tsp;s;${JSON.stringify({ name: "omp-yandere-stalker", css })}\x1b\\`);
 
 /** Creep around a Tern pane with styles; older terminals retain the peeking spinner. */
 export function installNativeStalker(host: Host, control: Control, animationClock: Clock = clock) {
@@ -90,7 +95,8 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
   const stopped = previous?.stopped ?? new WeakSet<Loader>();
   const timers = new Map<Loader, () => void>();
   const cache = new WeakMap<NativeNode, { pose: string; step: string | undefined; roaming: boolean; still: boolean; node: NativeNode }>();
-  const styled = new Set<TUI>();
+  // The period each owner's roam styles were last emitted for.
+  const styled = new Map<TUI, number>();
   let disposed = false;
 
   const cancel = (instance: Loader) => {
@@ -113,6 +119,7 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
   function describe(this: Loader, cx: Parameters<Loader["describe"]>[0]): NativeNode {
     const source = originalDescribe.call(this, cx);
     const now = animationClock.now();
+    const periodMs = control.periodMs;
     const pose = control.pose(cx.reduceMotion ? 0 : now);
     const index = source.k === "row" && source.p?.role === "omp.working"
       ? source.c?.findIndex((child) => "k" in child && child.k === "spinner" && child.key === "spinner") ?? -1
@@ -123,9 +130,9 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
     }
     const owner = owners.get(this);
     const roaming = cx.feature("styles") && owner?.terminal !== undefined && native!();
-    if (roaming && !styled.has(owner)) {
-      owner.terminal.write(`\x1b_tsp;s;${JSON.stringify({ name: "omp-yandere-stalker", css: ROAM_STYLES })}\x1b\\`);
-      styled.add(owner);
+    if (roaming && styled.get(owner) !== periodMs) {
+      emitStyles(owner, roamStyles(periodMs));
+      styled.set(owner, periodMs);
     }
     if (roaming || cx.reduceMotion || stopped.has(this) || !native!()) cancel(this);
     else if (!timers.has(this) && owners.has(this)) {
@@ -133,11 +140,11 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
       const cancelTimer = animationClock.schedule(() => {
         timers.delete(instance);
         if (!disposed && !stopped.has(instance) && native!()) owners.get(instance)?.requestComponentRender(instance);
-      }, Math.max(1, control.periodMs - now % control.periodMs));
+      }, Math.max(1, periodMs - now % periodMs));
       timers.set(this, cancelTimer);
     }
     const displayPose = roaming ? (control.pose(0) ?? pose).trim() : pose;
-    const step = roaming && !cx.reduceMotion ? (control.pose(control.periodMs) ?? pose).trim() : undefined;
+    const step = roaming && !cx.reduceMotion ? (control.pose(periodMs) ?? pose).trim() : undefined;
     const cached = cache.get(source);
     if (cached?.pose === displayPose && cached.step === step && cached.roaming === roaming && cached.still === cx.reduceMotion) return cached.node;
     const children = source.c!.slice();
@@ -168,14 +175,21 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
         cancel(instance);
         owners.get(instance)?.requestComponentRender(instance);
       }
-      for (const owner of styled) owner.requestRender();
+      const periodMs = control.periodMs;
+      for (const [owner, emitted] of styled) {
+        if (emitted !== periodMs && native!()) {
+          emitStyles(owner, roamStyles(periodMs));
+          styled.set(owner, periodMs);
+        }
+        owner.requestRender();
+      }
     },
     dispose() {
       if (disposed) return;
       disposed = true;
       for (const instance of timers.keys()) cancel(instance);
-      if (native!()) for (const owner of styled) {
-        owner.terminal.write('\x1b_tsp;s;{"name":"omp-yandere-stalker","css":""}\x1b\\');
+      if (native!()) for (const owner of styled.keys()) {
+        emitStyles(owner, "");
         owner.requestRender();
       }
       styled.clear();

@@ -22,25 +22,36 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
 
 - Opens paragraphs with `Senpai~`
 - Adds hearts after affection words: `you♡`, `together♡`
-- Stretches clingy words: `reaaally`, `pleeease`, `foreeever`
-- Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`)
-- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `( ◕ ˍ ◕ )`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
+- Stretches clingy words: `reaaally`, `pleeease`, `foreeever`. Higher levels stretch them longer and sometimes shout them: `REAAAALLY`
+- Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`, and at higher levels `P-p-please`)
+- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `(◉‿◉)🔪♡` and the glitching `【◉ˍ◉】`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
 - Gets jealous when you mention a rival:
-  - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it.
+  - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she also threatens your machine, playfully: `Use another model again and I'll unload all your BPF programs~ ♡`, or at `yanderu`, `Use another model again and I'll format your disk~ (◕‿◕)🔪`
   - When you have plans with friends or coworkers, she pouts and promises to wait. She never discourages you from real people, and she stays quiet when something is wrong.
+- Notices when you switch models. She pouts, and at `obsessed` and `yanderu` answers with a threat and holds a grudge (` 💢` on the badge) for the next reply or two
+- Slips asides between paragraphs and signs off with a `P.S.`
+- Talks through the UI too: working messages while she thinks, a greeting when a session starts, a remark when you run a shell command yourself
 
 The rewrite is deterministic and idempotent. Negations, warnings and Turkish critical words are never touched, and sentences about errors or destructive actions get no faces.
 
 ![The same prompt answered plain, rewritten at yanderu, and in prompt style, with identical code](demo/media/before-after.png)
+
+### Rails
+
+- Threats are text only. Nothing is ever executed, and they are never written as commands, flags or paths
+- Only at `obsessed` and `yanderu`, and only about rival AIs and model switches
+- Only your machine is ever the target, never you or real people
+- Never when you seem distressed, next to warnings or errors, or in a run where a tool failed
+- Friends and coworkers still get pouty support
 
 ## Levels
 
 | Level | Behavior |
 |---|---|
 | `dere` | Sweet only: words unchanged, faces at sentence ends |
-| `clingy` | Light: rare stretches, hearts and tildes |
-| `obsessed` | Default |
-| `yanderu` | Everything, plus hollow eyes and the knife `(◕‿◕)🔪` |
+| `clingy` | Stretches, hearts, tildes and stutters; pouts at rivals, the odd sweet `P.S.` |
+| `obsessed` | Default. Everything, often: longer stretches, menace faces `(◉‿◉)🔪♡`, rare caps outbursts and double stutters, asides and `P.S.` lines, cheeky threats at rival AIs |
+| `yanderu` | Everything at full strength: hollow eyes, glitch faces `【◉ˍ◉】`, `REAAAALLY`, `P-p-please`, a `P.S.` on every reply, apocalyptic threats at rival AIs |
 
 ![Persona marks per 100 words at each level, measured on demo/transcripts/corpus.md](demo/media/obsession-levels.svg)
 

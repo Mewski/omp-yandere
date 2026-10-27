@@ -7,9 +7,9 @@ import { Container, getMarkdownTheme, Markdown, visibleWidth } from "@oh-my-pi/p
 import { AssistantMessageComponent } from "@oh-my-pi/pi-tui/chat/assistant-message";
 import type { NativeNode } from "@oh-my-pi/pi-tui/native/node";
 import { getThemeByName, Theme } from "@oh-my-pi/pi-coding-agent";
-import { buildYamiKawaiiTheme, YamiKawaiiTheme } from "../src/theme.ts";
+import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES_BY_LEVEL, stalkerPoseAt, stalkerPoseMs, YamiKawaiiTheme } from "../src/theme.ts";
 import { blush, blushMarks, installBlush, type BlushInstallation, type Paint } from "../src/blush.ts";
-import { type DereLevel, yanderify, yanderifyMarkdownProse, yanderifyProse } from "../src/yandere.ts";
+import { DERE_LEVELS, type DereLevel, yanderify, yanderifyMarkdownProse, yanderifyProse } from "../src/yandere.ts";
 
 /** The strongest level: stretched words and hearts fire on nearly every candidate. */
 const YANDERU = { level: "yanderu" } as const;
@@ -67,6 +67,21 @@ describe("blush", () => {
     expect(painted("wish ☆\u0301 granted")).toEqual(["☆\u0301"]);
   });
 
+  test("hollow-eyed and knife faces stay crimson while hearts keep rotating", () => {
+    const source = "(◉‿◉) ♡ (⊙ˍ⊙) ♡ (•‿•)🔪 ♡ 【◉ˍ◉】 ♡";
+    const tones = [...blush(source, bracket).matchAll(/\[(\w+):([^\]]*)\]/g)].map((m) => [m[2], m[1]]);
+    expect(tones.filter(([text]) => text !== "♡")).toEqual([
+      ["(◉‿◉)", "mdListBullet"], ["(⊙ˍ⊙)", "mdListBullet"], ["(•‿•)", "mdListBullet"], ["【◉ˍ◉】", "mdListBullet"],
+    ]);
+    expect(new Set(tones.filter(([text]) => text === "♡").map(([, tone]) => tone)).size).toBeGreaterThan(1);
+    // One literal shares one native style: a face that ever holds the knife stays crimson.
+    const marks = blushMarks("(•‿•) hi (•‿•)🔪 and (◉‿◉)");
+    expect(marks.find(({ t }) => t === "(•‿•)")?.s).toBe("mdListBullet");
+    expect(marks.find(({ t }) => t === "(◉‿◉)")?.s).toBe("mdListBullet");
+    expect(blushMarks("(•‿•) hi").map(({ s }) => s)).not.toEqual(["mdListBullet"]);
+    expect(painted("【注意】 and 【docs】")).toEqual([]);
+  });
+
   test("the yandere theme restores an enclosing color after a nested span", async () => {
     const base = (await getThemeByName("dark")) as Theme;
     const yandere = buildYamiKawaiiTheme(Theme, base);
@@ -75,24 +90,59 @@ describe("blush", () => {
     expect(heading).toBe(`${open}hi ${yandere.getFgAnsi("accent")}♡${open} there\x1b[39m`);
   });
 
-  test("the working stalker keeps text aligned and leaves compact tool spinners unchanged", async () => {
+  test("the working stalker keeps text aligned and leaves compact tool spinners unchanged at every level", async () => {
     const original = (await getThemeByName("dark")) as Theme;
-    const expectedActivity = buildYamiKawaiiTheme(Theme, original).getSpinnerFrames("activity");
-    for (const preset of ["unicode", "nerd", "ascii"] as const) {
-      const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), preset, {});
-      const originalActivity = [...base.getSpinnerFrames("activity")];
-      const stalker = buildYamiKawaiiTheme(Theme, base);
-      const frames = stalker.getSpinnerFrames("activity");
-      expect(new Set(frames.map(visibleWidth)).size).toBe(1);
-      expect(new Set(frames).size).toBeGreaterThan(1);
-      // She ducks behind the wall: the visible face grows and shrinks inside a fixed-width lane.
-      expect(new Set(frames.map((frame) => frame.trimEnd().length)).size).toBeGreaterThan(1);
-      expect(frames.every((frame) => !/[\r\n\x1b]/.test(frame))).toBe(true);
-      expect(frames).not.toEqual(base.getSpinnerFrames("activity"));
-      expect(stalker.getSpinnerFrames("status")).toEqual(base.getSpinnerFrames("status"));
-      expect(base.getSpinnerFrames("activity")).toEqual(originalActivity);
-      expect(frames).toEqual(expectedActivity);
+    expect(Object.keys(STALKER_POSES_BY_LEVEL)).toEqual([...DERE_LEVELS]);
+    for (const level of DERE_LEVELS) {
+      const expectedActivity = buildYamiKawaiiTheme(Theme, original, level).getSpinnerFrames("activity");
+      for (const preset of ["unicode", "nerd", "ascii"] as const) {
+        const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), preset, {});
+        const originalActivity = [...base.getSpinnerFrames("activity")];
+        const stalker = buildYamiKawaiiTheme(Theme, base, level);
+        const frames = stalker.getSpinnerFrames("activity");
+        expect({ level, widths: [...new Set(frames.map(visibleWidth))] }).toEqual({ level, widths: [11] });
+        expect(new Set(frames).size).toBeGreaterThan(1);
+        // She ducks behind the wall: the visible face grows and shrinks inside a fixed-width lane.
+        expect(new Set(frames.map((frame) => frame.trimEnd().length)).size).toBeGreaterThan(1);
+        expect(frames.every((frame) => !/[\r\n\x1b]/.test(frame))).toBe(true);
+        expect(frames).not.toEqual(base.getSpinnerFrames("activity"));
+        expect(stalker.getSpinnerFrames("status")).toEqual(base.getSpinnerFrames("status"));
+        expect(base.getSpinnerFrames("activity")).toEqual(originalActivity);
+        expect(frames).toEqual(expectedActivity);
+        // Every level's frames are recognized, at that level's pace.
+        const poses = STALKER_POSES_BY_LEVEL[level];
+        expect(stalkerPoseAt(stalker, 0)).toBe(poses[0]);
+        expect(stalkerPoseAt(stalker, stalkerPoseMs(level))).toBe(poses[1]);
+      }
     }
+    expect(stalkerPoseAt(original, 0)).toBeUndefined();
+  });
+
+  test("the stalker creeps faster as the level rises, and obsessed is the default", () => {
+    const periods = DERE_LEVELS.map(stalkerPoseMs);
+    expect(periods).toEqual([...periods].sort((a, b) => b - a));
+    expect(stalkerPoseMs("obsessed")).toBeLessThan(stalkerPoseMs("clingy"));
+    expect(stalkerPoseMs("yanderu")).toBeLessThan(stalkerPoseMs("obsessed"));
+    expect(STALKER_POSE_MS).toBe(stalkerPoseMs("obsessed"));
+  });
+
+  test("a level change rebuilds the overlay from the user's theme", async () => {
+    const original = (await getThemeByName("dark")) as Theme;
+    const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), "unicode", {}, { activity: ["a", "b"] });
+    let current = base;
+    let installs = 0;
+    const overlay = new YamiKawaiiTheme({ Theme, setThemeInstance: (theme) => { current = theme; installs++; } });
+    overlay.enable(current, "dere");
+    const dere = current;
+    overlay.enable(current, "dere");
+    expect(installs).toBe(1);
+    overlay.enable(current, "yanderu");
+    expect(installs).toBe(2);
+    expect(current).not.toBe(dere);
+    expect(stalkerPoseAt(current, 0)).toBe(STALKER_POSES_BY_LEVEL.yanderu[0]);
+    overlay.disable(current);
+    expect(current).toBe(base);
+    expect(current.getSpinnerFrames("activity")).toEqual(["a", "b"]);
   });
 
   test("turning the yandere theme off restores the user's theme and custom activity spinner", async () => {
@@ -200,7 +250,7 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
       native: (text) => ({ text: yanderifyMarkdownProse(text, YANDERU), marks: [] }),
     });
     expect(AssistantMessageComponent.prototype.updateContent).toBe(patched);
-    expect(Bun.stripANSI(render(component))).toContain("reaaaally sweeeet");
+    expect(Bun.stripANSI(render(component))).toMatch(/rea{3,}lly swe{3,}t/);
   });
 
   test("display prose composes with blush but never changes inline/fenced code or raw messages", () => {
@@ -216,7 +266,7 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
     const component = new AssistantMessageComponent(raw);
     const rows = component.render(80);
     const plain = Bun.stripANSI(rows.join("\n"));
-    expect(plain).toContain("reaaaally sweeeet");
+    expect(plain).toMatch(/rea{3,}lly swe{3,}t/);
     expect(plain).toContain("really");
     expect(plain).toContain('const really = "sweet";');
     expect(rows.join("\n").split(MARK).length - 1).toBe(3);
@@ -283,7 +333,7 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
     const md = nativeMd(description);
     expect(installation.isNativeSupported()).toBe(true);
     expect(md.p?.text).toBe(yanderifyMarkdownProse(text, YANDERU));
-    expect(md.p?.text).toContain("reaaaally sweeeet");
+    expect(md.p?.text).toMatch(/rea{3,}lly swe{3,}t/);
     expect(md.p?.text).toContain("`ehehe~`");
     expect(md.p?.text).toContain("```\nehehe~ (◕ᴗ◕✿)\n```");
     expect(md.p?.text).toContain("https://example.com/really");
@@ -333,8 +383,8 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
         const paragraphBreak = protectedSource.indexOf("\n\n");
         const protectedCode = paragraphBreak === -1 ? protectedSource : protectedSource.slice(paragraphBreak + 2);
         expect(md.p?.text).toContain(protectedCode);
-        if (protectedSource.startsWith("- really\n")) expect(md.p?.text).toContain("- reaaaally\n");
-        expect(md.p?.text).toContain("reaaaally sweeeet");
+        if (protectedSource.startsWith("- really\n")) expect(md.p?.text).toMatch(/- rea{3,}lly\n/);
+        expect(md.p?.text).toMatch(/rea{3,}lly swe{3,}t/);
         expect(md.p?.text).not.toBe(text);
         if (colors) {
           expect(md.p?.marks).toEqual(blushMarks(md.p?.text ?? ""));
@@ -364,13 +414,13 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
         const component = new AssistantMessageComponent(message(initial));
         const first = component.describe();
         expect(nativeMd(first).p?.text).toContain(unfinished!);
-        expect(nativeMd(first).p?.text).toContain("reaaaally sweeeet");
+        expect(nativeMd(first).p?.text).toMatch(/rea{3,}lly swe{3,}t/);
         const completed = `${initial}${closure}\n\nreally sweet world.`;
         const raw = message(completed);
         component.updateContent(raw, { transient: true });
         const next = component.describe();
         expect(nativeMd(next).p?.text).toContain(`${unfinished}${closure}`);
-        expect(nativeMd(next).p?.text).toEndWith("reaaaally sweeeet world.");
+        expect(nativeMd(next).p?.text).toMatch(/rea{3,}lly swe{3,}t world\.$/);
         expect(next).not.toBe(first);
         expect(JSON.stringify(raw)).toBe(JSON.stringify(message(completed)));
         if (colors) {
@@ -404,10 +454,10 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
       const component = new AssistantMessageComponent(message(text));
       const prose = nativeMd(component.describe()).p?.text;
       expect(prose).toContain(protectedSource);
-      expect(prose).toEndWith("reaaaally sweeeet world.");
+      expect(prose).toMatch(/rea{3,}lly swe{3,}t world\.$/);
     }
     const component = new AssistantMessageComponent(message("hello `code`    really world"));
-    expect(nativeMd(component.describe()).p?.text).toContain("`code`    reaaaally world");
+    expect(nativeMd(component.describe()).p?.text).toMatch(/`code` {4}rea{3,}lly world/);
   });
 
   test("native inactive and host-transform paths return the host node unchanged", () => {
@@ -486,7 +536,7 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
     expect(AssistantMessageComponent.prototype.describe).toBe(patched);
     const next = component.describe();
     expect(next).not.toBe(first);
-    expect(nativeMd(next).p?.text).toBe("reaaaally sweeeet ehehe~");
+    expect(nativeMd(next).p?.text).toBe(yanderifyMarkdownProse("really sweet ehehe~", YANDERU));
     expect(Object.hasOwn(nativeMd(next).p!, "marks")).toBe(false);
     installation.dispose();
     expect(AssistantMessageComponent.prototype.describe).toBe(originalDescribe);

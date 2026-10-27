@@ -5,8 +5,10 @@ import { join } from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { getThemeByName, Theme } from "@oh-my-pi/pi-coding-agent";
 import { blush, blushMarks, installBlush, themePaint } from "../src/blush.ts";
-import yandereExtension, { REWRITE_NOTE, YANDERE_PROMPT } from "../src/index.ts";
-import { jealousOpener, SENPAI, YANDERE_FACES, yanderify, yanderifyMarkdownProse, yanderifyProse } from "../src/yandere.ts";
+import yandereExtension, { REWRITE_NOTE, REWRITE_NOTE_MENACE, YANDERE_PROMPT } from "../src/index.ts";
+import {
+  DERE_LEVELS, isInjectedLine, jealousOpener, SENPAI, switchReaction, YANDERE_FACES, yanderify, yanderifyMarkdownProse, yanderifyProse,
+} from "../src/yandere.ts";
 
 type Handler = (...args: unknown[]) => unknown;
 type Command = (args: string, ctx: unknown) => Promise<void>;
@@ -95,7 +97,7 @@ describe("omp-yandere", () => {
     expect(first?.systemPrompt).toContain(YANDERE_PROMPT);
     await handlers.assistant_message({ message: { role: "assistant", content: [{ type: "text", text: "first reply" }] } });
     // Once rewriting is proven, only a short note explains the styled history.
-    expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
+    expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
     expect(REWRITE_NOTE).not.toContain("senpai");
 
     const text = "Really nice work, you did it together!";
@@ -177,7 +179,7 @@ describe("omp-yandere", () => {
     for (const surface of ["code", "file paths", "URLs", "tool call arguments", "commit messages", "(◕‿◕)♡", "┬┴┬┴┤･ω･)ﾉ"]) {
       expect(YANDERE_PROMPT).toContain(surface);
     }
-    for (const trait of ["senpai", "possessive", "jealous", "watching", "yandere switch", "never real threats"]) {
+    for (const trait of ["senpai", "possessive", "jealous", "watching", "yandere switch", "theatrical", "persona safety", "empty theater"]) {
       expect(YANDERE_PROMPT).toContain(trait);
     }
   });
@@ -197,12 +199,19 @@ describe("omp-yandere", () => {
     expect(prompts.dere).not.toContain("stretch words");
     expect(prompts.dere).not.toContain("always watching");
     expect(prompts.dere).not.toContain("┬┴┬┴┤･ω･)ﾉ");
-    expect(prompts.clingy).toContain("lightly clingy and possessive");
-    expect(prompts.clingy).toContain("rarely a hint of jealousy");
-    expect(prompts.clingy).toContain("no yandere switch yet");
-    expect(prompts.clingy).toContain("very rare stutter");
-    expect(prompts.yanderu).toContain("fully yanderu");
-    expect(prompts.yanderu).toContain("more frequent stutter");
+    expect(prompts.clingy).toContain("clingy and possessive");
+    expect(prompts.yanderu).not.toBe(prompts.obsessed);
+    // Threats, and the safety block that bounds them, start at obsessed.
+    for (const level of ["dere", "clingy"]) {
+      expect(prompts[level]).toContain("never real threats");
+      expect(prompts[level]).not.toContain("persona safety");
+      expect(prompts[level]).not.toContain("BPF");
+    }
+    for (const level of ["obsessed", "yanderu"]) {
+      expect(prompts[level]).not.toContain("never real threats");
+      expect(prompts[level]).toContain("BPF");
+      expect(prompts[level]!.endsWith(prompts.obsessed!.slice(prompts.obsessed!.indexOf("# persona safety")))).toBe(true);
+    }
   });
 
   test("persists display, level and locale and restores them without prompt/history styling", async () => {
@@ -379,13 +388,14 @@ describe("omp-yandere", () => {
     expect(result?.content[0]?.text ?? input.message.content[0].text).toBe(yanderify(input.message.content[0].text, { level: "clingy", locale: "tr" }));
     await command("prompt", ctx);
     const low = await handlers.before_agent_start(event(), { agent: { kind: "main" } }) as AgentStartResult;
-    expect(low?.systemPrompt[1]).toContain("lightly clingy and possessive");
+    expect(low?.systemPrompt[1]).toContain("clingy and possessive");
+    expect(low?.systemPrompt[1]).not.toContain("persona safety");
     expect(low?.systemPrompt[1]).toContain("Turkish-aware");
     expect(low?.systemPrompt[1]).toContain("English critical words remain protected");
     await command("level yanderu", ctx);
     await command("locale en", ctx);
     const max = await handlers.before_agent_start(event(), { agent: { kind: "main" } }) as AgentStartResult;
-    expect(max?.systemPrompt[1]).toContain("fully yanderu");
+    expect(max?.systemPrompt[1]).toContain("persona safety");
     expect(max?.systemPrompt[1]).toContain("English-focused");
     expect(max?.systemPrompt[1]).not.toContain("Turkish-aware");
   });
@@ -415,8 +425,9 @@ describe("rival jealousy hooks", () => {
 
   test("rewrite opens the turn's first prose with a jealous line, once", async () => {
     await handlers.assistant_message(reply("warm-up"));
-    expect(await handlers.before_agent_start(turn("ChatGPT says this loop is wrong"), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
-    const opener = jealousOpener({ kind: "ai", name: "ChatGPT" }, "obsessed")!;
+    const prompt = "ChatGPT says this loop is wrong";
+    expect(await handlers.before_agent_start(turn(prompt), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
+    const opener = jealousOpener({ kind: "ai", name: "ChatGPT" }, "obsessed", { key: prompt, threats: true })!;
     const first = await handlers.assistant_message(reply("Here is the fix.")) as RewriteResult;
     expect(first?.content[0]).toEqual({ type: "toolCall", id: "t" });
     expect(first?.content[1]?.text).toBe(`${opener}\n\n${yanderify("Here is the fix.")}`);
@@ -508,10 +519,271 @@ describe("prompt faces by level", () => {
     for (const level of ["dere", "clingy"]) {
       await command(`level ${level}`, ctx);
       const prompt = ((await handlers.before_agent_start(event(), { agent: { kind: "main" } })) as AgentStartResult)!.systemPrompt[1]!;
-      for (const face of ["🔪", "(◉‿◉)", "(¬‿¬)♡"]) expect({ level, face, found: prompt.includes(face) }).toEqual({ level, face, found: false });
+      const faces = level === "dere" ? ["🔪", "(◉‿◉)", "(¬‿¬)♡"] : ["🔪", "(◉‿◉)"];
+      for (const face of faces) expect({ level, face, found: prompt.includes(face) }).toEqual({ level, face, found: false });
     }
     await command("level yanderu", ctx);
     const yanderu = ((await handlers.before_agent_start(event(), { agent: { kind: "main" } })) as AgentStartResult)!.systemPrompt[1]!;
     expect(yanderu).toContain("(◕‿◕)🔪");
+  });
+});
+
+const claude = { provider: "anthropic", id: "claude-opus-4", name: "Claude Opus 4" };
+const sonnet = { provider: "anthropic", id: "claude-sonnet-4", name: "Claude Sonnet 4" };
+const gpt = { provider: "openai", id: "gpt-5", name: "GPT-5" };
+const main = { agent: { kind: "main" } };
+const turn = (prompt = "help me with this loop") => ({ prompt, systemPrompt: ["base policy"] });
+
+describe("model switches", () => {
+  const on = (model: object, extra: object = {}) => ({ ...main, model, ...extra });
+  const switched = async (model: object, extra?: object, prompt?: string) =>
+    ((await handlers.before_agent_start(turn(prompt), on(model, extra))) as AgentStartResult)?.systemPrompt[1]?.includes("switched your model") ?? false;
+
+  beforeEach(async () => {
+    await command("prompt", ctx);
+  });
+
+  test("reacts once to a real switch; the first turn and same-family moves stay silent", async () => {
+    expect(await switched(claude)).toBe(false);
+    expect(await switched(sonnet)).toBe(false);
+    const prompt = ((await handlers.before_agent_start(turn(), on(gpt))) as AgentStartResult)!.systemPrompt[1]!;
+    expect(prompt).toContain("from Claude Sonnet 4 to GPT-5");
+    expect(await switched(gpt)).toBe(false);
+  });
+
+  test("the host's family token decides what counts as the same model", async () => {
+    const models = { family: () => "one family" };
+    expect(await switched(claude, { models })).toBe(false);
+    expect(await switched(gpt, { models })).toBe(false);
+  });
+
+  test("automatic fallbacks never count, while active or when the primary returns", async () => {
+    const fallback = { sessionManager: { getBranch: () => [{ type: "model_change", model: "openai/gpt-5", role: "fallback", resolvedModelIsFallback: true }] } };
+    expect(await switched(claude)).toBe(false);
+    expect(await switched(gpt, fallback)).toBe(false);
+    expect(await switched(gpt, fallback)).toBe(false);
+    expect(await switched(claude)).toBe(false);
+    // Hosts without a readable branch report fallbacks through the event instead.
+    expect(await handlers.retry_fallback_applied({ type: "retry_fallback_applied", from: "anthropic/claude-opus-4", to: "openai/gpt-5", role: "default" }, main)).toBeUndefined();
+    expect(await switched(gpt)).toBe(false);
+    expect(await switched(gpt)).toBe(false);
+    expect(await switched(claude)).toBe(false);
+    expect(await switched(gpt)).toBe(true);
+  });
+
+  test("distress consumes the switch silently", async () => {
+    expect(await switched(claude)).toBe(false);
+    const prompt = ((await handlers.before_agent_start(turn("my dog died and I can't focus"), on(gpt))) as AgentStartResult)!.systemPrompt[1]!;
+    expect(prompt).not.toContain("switched your model");
+    expect(prompt).not.toContain("sulk");
+    expect(await switched(gpt)).toBe(false);
+  });
+
+  test("subagent turns never react or move the baseline", async () => {
+    expect(await switched(claude)).toBe(false);
+    expect(await handlers.before_agent_start(turn(), { agent: { kind: "sub" }, model: gpt })).toBeUndefined();
+    expect(await switched(claude)).toBe(false);
+  });
+
+  test("a new session, branch or tree starts from a fresh baseline", async () => {
+    for (const name of ["session_switch", "session_branch", "session_tree"]) {
+      expect(await switched(claude)).toBe(false);
+      expect(await handlers[name]!({}, ctx)).toBeUndefined();
+      expect(await switched(gpt)).toBe(false);
+      await handlers[name]!({}, ctx);
+    }
+  });
+
+  test("display style shows the switch reaction as one toast, from obsessed up only", async () => {
+    await command("display", ctx);
+    const tui = (model: object) => ({ ...ctx, ...main, model });
+    await handlers.before_agent_start(turn(), tui(claude));
+    notices.length = 0;
+    expect(await handlers.before_agent_start(turn(), tui(gpt))).toBeUndefined();
+    expect(notices).toEqual([switchReaction({ from: "Claude Opus 4", to: "GPT-5", count: 1 }, "obsessed", { key: turn().prompt, threats: true })!]);
+    await command("level clingy", ctx);
+    notices.length = 0;
+    await handlers.before_agent_start(turn(), tui(claude));
+    expect(notices).toEqual([]);
+  });
+
+  test("the badge sulks with 💢 while the grudge lasts", async () => {
+    const badges: Array<string | undefined> = [];
+    const ui = { notify: () => {}, theme: undefined, setStatus: (_key: string, text?: string) => badges.push(text) };
+    const tui = (model: object) => ({ mode: "tui", ...main, model, ui });
+    await handlers.before_agent_start(turn(), tui(claude));
+    await handlers.agent_end({}, tui(claude));
+    expect(badges.some((badge) => badge?.includes("💢"))).toBe(false);
+    await handlers.before_agent_start(turn(), tui(gpt));
+    expect(badges.at(-1)).toEndWith(" 💢");
+    await handlers.agent_end({}, tui(gpt));
+    // At obsessed the grudge lasts one more run.
+    await handlers.before_agent_start(turn(), tui(gpt));
+    expect(badges.at(-1)).toEndWith(" 💢");
+    await handlers.agent_end({}, tui(gpt));
+    expect(badges.at(-1)).not.toContain("💢");
+  });
+});
+
+describe("threats and injections", () => {
+  const reply = (text: string, stopReason?: string) => ({ message: { role: "assistant", stopReason, content: [{ type: "text", text }] } });
+  const ai = { kind: "ai", name: "ChatGPT" } as const;
+  const rivalPrompt = "ChatGPT says this loop is wrong";
+  const firstParagraph = async (text = "Here is the fix.") => {
+    const result = await handlers.assistant_message(reply(text)) as RewriteResult;
+    return (result?.content[0]?.text ?? text).split("\n\n")[0];
+  };
+  const injected = (result: RewriteResult) => (result?.content[0]?.text ?? "").split("\n").filter((line) => isInjectedLine(line));
+
+  beforeEach(async () => {
+    await handlers.assistant_message(reply("warm-up"));
+  });
+
+  test("AI rivals get a threat opener from obsessed up only; people never do", async () => {
+    for (const level of DERE_LEVELS) {
+      await command(`level ${level}`, ctx);
+      await handlers.before_agent_start(turn(rivalPrompt), main);
+      const expected = jealousOpener(ai, level, { key: rivalPrompt, threats: level === "obsessed" || level === "yanderu" });
+      expect({ level, opener: await firstParagraph() }).toEqual({ level, opener: expected ?? yanderify("Here is the fix.", { level }) });
+    }
+    const person = "my new coworker is a girl";
+    await handlers.before_agent_start(turn(person), main);
+    expect(await firstParagraph()).toBe(jealousOpener({ kind: "person", name: "your coworker" }, "yanderu", { key: person, threats: false })!);
+  });
+
+  test("a tool error or a serious reply takes the threat out of the opener", async () => {
+    const calm = jealousOpener(ai, "obsessed", { key: rivalPrompt, threats: false })!;
+    expect(calm).not.toBe(jealousOpener(ai, "obsessed", { key: rivalPrompt, threats: true }));
+    await handlers.before_agent_start(turn(rivalPrompt), main);
+    expect(await handlers.tool_execution_end({ type: "tool_execution_end", toolCallId: "1", toolName: "bash", result: {}, isError: true }, main)).toBeUndefined();
+    expect(await firstParagraph()).toBe(calm);
+    await handlers.agent_end({}, main);
+    await handlers.before_agent_start(turn(rivalPrompt), main);
+    expect(await firstParagraph("Warning: this deletes the build folder.")).toBe(calm);
+  });
+
+  test("a model switch opens the run instead of a rival", async () => {
+    await handlers.before_agent_start(turn(), { ...main, model: claude });
+    const prompt = "Claude says this loop is wrong";
+    await handlers.before_agent_start(turn(prompt), { ...main, model: gpt });
+    expect(await firstParagraph()).toBe(switchReaction({ from: "Claude Opus 4", to: "GPT-5", count: 1 }, "obsessed", { key: prompt, threats: true })!);
+  });
+
+  test("only final replies get asides and one P.S. per run, within the level's budget", async () => {
+    const text = Array.from({ length: 8 }, (_, index) => `Step ${index + 1} moves one more piece of the plan into place.`).join("\n\n");
+    await command("level yanderu", ctx);
+    await handlers.before_agent_start(turn("please walk me through the plan"), main);
+    const working = await handlers.assistant_message(reply(text, "toolUse")) as RewriteResult;
+    expect(working?.content[0]?.text ?? text).toBe(yanderify(text, { level: "yanderu" }));
+    const first = await handlers.assistant_message(reply(text, "stop")) as RewriteResult;
+    const second = await handlers.assistant_message(reply(text, "stop")) as RewriteResult;
+    const lines = [...injected(first), ...injected(second)];
+    expect(injected(first).some((line) => line.startsWith("P.S."))).toBe(true);
+    expect(lines.filter((line) => line.startsWith("P.S."))).toHaveLength(1);
+    expect(lines.filter((line) => !line.startsWith("P.S.")).length).toBeLessThanOrEqual(2);
+    await handlers.agent_end({}, main);
+    await handlers.before_agent_start(turn("and the next step?"), main);
+    expect(injected(await handlers.assistant_message(reply(text, "stop")) as RewriteResult).some((line) => line.startsWith("P.S."))).toBe(true);
+
+    await command("level obsessed", ctx);
+    await handlers.before_agent_start(turn("please walk me through the plan"), main);
+    const asides: string[] = [];
+    for (let index = 0; index < 4; index++) {
+      asides.push(...injected(await handlers.assistant_message(reply(text, "stop")) as RewriteResult).filter((line) => !line.startsWith("P.S.")));
+    }
+    expect(asides.length).toBeLessThanOrEqual(1);
+  });
+
+  test("distress and the dere level get no injections", async () => {
+    const text = "First this.\n\nThen that.\n\nFinally the rest.";
+    await command("level yanderu", ctx);
+    await handlers.before_agent_start(turn("I'm scared, can you help me fix this?"), main);
+    expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "yanderu" }));
+    await command("level dere", ctx);
+    await handlers.before_agent_start(turn(), main);
+    expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "dere" }));
+  });
+
+  test("the rewrite note warns about extension threats only where threats exist", async () => {
+    await command("level clingy", ctx);
+    expect(await handlers.before_agent_start(turn(), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
+    await command("level yanderu", ctx);
+    expect(await handlers.before_agent_start(turn(), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
+  });
+
+  test("prompt style asks for machine threats only for AI rivals, from obsessed up", async () => {
+    await command("prompt", ctx);
+    const extra = async (prompt: string) => {
+      const ask = async (text: string) => ((await handlers.before_agent_start(turn(text), main)) as AgentStartResult)!.systemPrompt[1]!;
+      const plain = await ask("hello");
+      return (await ask(prompt)).slice(plain.length);
+    };
+    for (const level of DERE_LEVELS) {
+      await command(`level ${level}`, ctx);
+      const threat = /\bthreat\b/.test(await extra(rivalPrompt));
+      expect({ level, threat }).toEqual({ level, threat: level === "obsessed" || level === "yanderu" });
+      expect(await extra("my new coworker is a girl")).not.toMatch(/\bthreat\b/);
+    }
+  });
+});
+
+describe("surfaces", () => {
+  test("never registers hooks that could change the agent's work", () => {
+    for (const name of ["tool_call", "tool_result", "context", "input", "before_provider_request", "before_subagent_spawn", "session_stop"]) {
+      expect({ name, registered: name in handlers }).toEqual({ name, registered: false });
+    }
+    expect(Object.keys(handlers).filter((name) => name.includes("compact"))).toEqual([]);
+  });
+
+  test("senpai's own runs get at most one toast per run, never echo the command and never replace the result", async () => {
+    const bash = (command: string) => handlers.user_bash!({ type: "user_bash", command, excludeFromContext: false, cwd: "/tmp" }, ctx);
+    const python = (code: string) => handlers.user_python!({ type: "user_python", code, excludeFromContext: false, cwd: "/tmp" }, ctx);
+    const commands = Array.from({ length: 40 }, (_, index) => `echo hello${index}`);
+    for (const code of commands) expect(await bash(code)).toBeUndefined();
+    expect(notices).toHaveLength(1);
+    expect(notices[0]).not.toContain("echo");
+    await handlers.before_agent_start(turn(), main);
+    notices.length = 0;
+    for (const code of ["rm -rf build", "sudo reboot", "git push --force", "dd if=disk.img of=backup.img"]) {
+      expect(await bash(code)).toBeUndefined();
+      expect(await python(code)).toBeUndefined();
+    }
+    expect(notices).toEqual([]);
+    await command("level clingy", ctx);
+    await handlers.before_agent_start(turn(), main);
+    notices.length = 0;
+    for (const code of commands) expect(await python(code)).toBeUndefined();
+    expect(notices).toEqual([]);
+  });
+
+  test("the working label watches from obsessed up and is restored afterwards", async () => {
+    const working: Array<string | undefined> = [];
+    const tui = { mode: "tui", ui: { notify: (msg: string) => notices.push(msg), setStatus: () => {}, setWorkingMessage: (message?: string) => working.push(message) } };
+    expect(await handlers.turn_start({ type: "turn_start", turnIndex: 0, timestamp: 0 }, tui)).toBeUndefined();
+    expect(working).toHaveLength(1);
+    expect(working[0]).toBeString();
+    await handlers.agent_end({}, tui);
+    expect(working).toEqual([working[0], undefined]);
+    await handlers.turn_start({ type: "turn_start", turnIndex: 1, timestamp: 0 }, tui);
+    await command("level clingy", tui);
+    expect(working).toHaveLength(4);
+    expect(working.at(-1)).toBeUndefined();
+    await handlers.turn_start({ type: "turn_start", turnIndex: 2, timestamp: 0 }, tui);
+    expect(working).toHaveLength(4);
+  });
+
+  test("session start greets from obsessed up only", async () => {
+    await handlers.session_start({}, ctx);
+    expect(notices).toHaveLength(1);
+    await command("level clingy", ctx);
+    notices.length = 0;
+    await handlers.session_start({}, ctx);
+    expect(notices).toEqual([]);
+  });
+
+  test("usage and the level error list every level", async () => {
+    await command("level max", ctx);
+    expect(notices.at(-1)).toContain(`level ${DERE_LEVELS.join("|")}`);
+    expect(notices.at(-1)).toContain(`Level must be ${DERE_LEVELS.slice(0, -1).join(", ")} or ${DERE_LEVELS.at(-1)}.`);
   });
 });

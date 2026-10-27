@@ -51,10 +51,7 @@ export function measureLevel(level: DereLevel, corpus = CORPUS): LevelMeasure {
   for (const [index, original] of before.entries()) {
     const styled = after[index]!;
     if (styled === original) continue;
-    if (styled.includes("♡") && !original.includes("♡")) marks.hearts++;
-    if (/(\p{L})\1\1/u.test(styled) && !/(\p{L})\1\1/u.test(original)) marks.stretches++;
-    if (/~$/.test(styled) && /\.$/.test(original)) marks.tildes++;
-    if (/^\W*(\p{L})-\1/iu.test(styled)) marks.stutters++;
+    for (const mark of tokenMarks(original, styled)) marks[mark]++;
   }
   const words = before.filter((token) => /\p{L}/u.test(token)).length;
   const total = Object.values(marks).reduce((sum, count) => sum + count, 0);
@@ -63,6 +60,20 @@ export function measureLevel(level: DereLevel, corpus = CORPUS): LevelMeasure {
     perHundred: Number((total * 100 / words).toFixed(1)),
     exact: technicalSpans(corpus).every((span) => output.includes(span)),
   };
+}
+
+/**
+ * The word marks one rewritten token carries. Stretches compare lowercased
+ * forms, so caps outbursts (`REAAAALLY`) count as stretches; any number of
+ * stutter beats (`P-please`, `P-p-please`) counts as one stutter.
+ */
+export function tokenMarks(original: string, styled: string): Array<"hearts" | "stretches" | "tildes" | "stutters"> {
+  const marks: Array<"hearts" | "stretches" | "tildes" | "stutters"> = [];
+  if (styled.includes("♡") && !original.includes("♡")) marks.push("hearts");
+  if (/(\p{L})\1\1/u.test(styled.toLowerCase()) && !/(\p{L})\1\1/u.test(original.toLowerCase())) marks.push("stretches");
+  if (/~$/.test(styled) && /\.$/.test(original)) marks.push("tildes");
+  if (/^\W*(\p{L})(?:-\1)+/iu.test(styled) && !/^\W*(\p{L})-\1/iu.test(original)) marks.push("stutters");
+  return marks;
 }
 
 const BAYER4 = [
@@ -145,22 +156,26 @@ export function buildHero(): string {
 
 export function buildObsessionChart(measures = DERE_LEVELS.map((level) => measureLevel(level))): string {
   const x = 250;
+  const top = 150;
+  const step = 62;
+  // The footer sits below the last bar's caption, so the panel grows with the ladder.
+  const bottom = top + measures.length * step + 7;
   const width = 560;
   const max = Math.max(...measures.map((m) => m.perHundred), 1);
   const scale = Math.ceil(max / 10) * 10;
   const words = measures[0]!.words;
   const rows = measures.map((m, index) => {
-    const y = 150 + index * 62;
+    const y = top + index * step;
     const barWidth = Number((width * m.perHundred / scale).toFixed(1));
     const { faces, senpai, hearts, stretches, tildes, stutters } = m.marks;
-    return `  <text class="mono ${index === 3 ? "pink" : ""}" x="40" y="${y + 20}" font-size="22">${m.level}</text>
+    return `  <text class="mono ${index === measures.length - 1 ? "pink" : ""}" x="40" y="${y + 20}" font-size="22">${m.level}</text>
   <rect id="bar-${m.level}" x="${x}" y="${y}" width="${barWidth}" height="26" fill="${PALETTE.plum}"/>
   <rect x="${x}" y="${y}" width="${barWidth}" height="26" fill="url(#bar-dither)"/>
   <text class="mono" x="${x + barWidth + 12}" y="${y + 20}" font-size="20">${m.perHundred}</text>
   <text class="mono muted" x="${x}" y="${y + 46}" font-size="14">${faces} faces · ${senpai} senpai · ${hearts} hearts · ${stretches} stretches · ${tildes} tildes · ${stutters} stutters</text>`;
   }).join("\n");
   const exact = measures.every((m) => m.exact);
-  return svg(470, "Obsession levels — persona marks per 100 words, measured on demo/transcripts/corpus.md",
+  return svg(bottom + 65, "Obsession levels — persona marks per 100 words, measured on demo/transcripts/corpus.md",
     `Measured at generation time by running yanderify over demo/transcripts/corpus.md (${words} words) at each level. Marks per 100 words: ${measures.map((m) => `${m.level} ${m.perHundred}`).join(", ")}. Code spans and fenced blocks preserved byte-for-byte at every level: ${exact ? "yes" : "no"}.`,
     dither("bar-dither", PALETTE.pink), `  <text class="mono eyebrow" x="40" y="36">MEASURED / DEMO/CORPUS.MD · ${words} WORDS</text>
   <text x="40" y="75" font-size="32" font-weight="600" letter-spacing="-1">How obsessed is she?</text>
@@ -169,9 +184,9 @@ export function buildObsessionChart(measures = DERE_LEVELS.map((level) => measur
   <text class="mono muted" x="40" y="128" font-size="15" letter-spacing="1">LEVEL</text>
   <text class="mono muted" x="${x}" y="128" font-size="15" letter-spacing="1">PERSONA MARKS PER 100 WORDS</text>
 ${rows}
-  <path class="rule" d="M40 405.5H920"/>
-  <text class="mono ${exact ? "blush" : "pink"}" x="40" y="436" font-size="18">${exact ? "✓ every code span and fenced block byte-for-byte unchanged, at every level" : "✗ a code span changed"}</text>
-  <text class="muted" x="40" y="459" font-size="14">Deterministic: re-running bun demo/readme-assets.ts reproduces these numbers exactly.</text>`);
+  <path class="rule" d="M40 ${bottom + 0.5}H920"/>
+  <text class="mono ${exact ? "blush" : "pink"}" x="40" y="${bottom + 31}" font-size="18">${exact ? "✓ every code span and fenced block byte-for-byte unchanged, at every level" : "✗ a code span changed"}</text>
+  <text class="muted" x="40" y="${bottom + 54}" font-size="14">Deterministic: re-running bun demo/readme-assets.ts reproduces these numbers exactly.</text>`);
 }
 
 export function buildStyleMap(): string {

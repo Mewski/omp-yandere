@@ -1,6 +1,9 @@
 import type { ExtensionUiComponent, Theme } from "@oh-my-pi/pi-coding-agent";
 import { Key, matchesKey, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@oh-my-pi/pi-tui";
-import { DERE_LEVELS, type DereLevel, type YandereLocale, yanderify, yanderifyProse } from "./yandere.ts";
+import { atLeast, DERE_LEVELS, type DereLevel, levelRank, type YandereLocale, yanderify, yanderifyProse } from "./yandere.ts";
+
+/** The title's face darkens with the draft level. */
+const TITLE_FACES: Record<DereLevel, string> = { dere: "♡", clingy: "♡", obsessed: "(◉‿◉)🔪", yanderu: "(◉ˍ◉)🔪" };
 
 export type YandereSettings = {
   enabled: boolean;
@@ -85,20 +88,31 @@ export function createStatusCard(
         const key = contentWidth >= 34 ? label.padEnd(16) : `${label}: `;
         row(`${theme.fg("text", key)}${value}`);
       };
+      // Stronger levels write longer text; reserve the tallest level's rows so
+      // cycling the level never makes the card jump.
+      const levelRow = (textFor: (level: DereLevel) => string) => {
+        const reserved = Math.max(...levels.map((level) => wrapTextWithAnsi(textFor(level), contentWidth).length));
+        const text = textFor(draft.level);
+        row(text);
+        for (let used = wrapTextWithAnsi(text, contentWidth).length; used < reserved; used++) row("");
+      };
 
       rule("╭", "╮");
-      const title = theme.fg("accent", theme.bold("Yandere settings ♡"));
       const badge = theme.fg(draft.enabled ? "success" : "text", theme.bold(draft.enabled ? "[ON]" : "[OFF]"));
-      row(`${title}${" ".repeat(Math.max(1, contentWidth - visibleWidth(title) - visibleWidth(badge)))}${badge}`);
+      levelRow((level) => {
+        const title = theme.fg("accent", theme.bold(`Yandere settings ${TITLE_FACES[level]}`));
+        return `${title}${" ".repeat(Math.max(1, contentWidth - visibleWidth(title) - visibleWidth(badge)))}${badge}`;
+      });
       row(`${chip("Controls", tab === "controls")} ${chip("Compatibility", tab === "compatibility")}`);
       rule("├", "┤");
       if (tab === "controls") {
         control(0, "Mode", `${chip(draft.enabled ? "● ON" : "ON", draft.enabled)} ${chip(draft.enabled ? "OFF" : "OFF ●", !draft.enabled)}`);
         control(1, "Style", presets(styles, draft.style));
-        // Three hearts fill as deredere turns yanderu; with the four chips this
-        // fits the 64-column content width exactly.
-        const filled = levels.indexOf(draft.level);
-        control(2, "Obsession", `${presets(levels, draft.level)} ${theme.fg("accent", "♥".repeat(filled))}${theme.fg("dim", "♡".repeat(3 - filled))}`);
+        // Three hearts fill as deredere turns yanderu, bleeding crimson at the
+        // top; with the four chips this fits the 64-column content width exactly.
+        const filled = levelRank(draft.level);
+        const hearts = theme.fg(atLeast(draft.level, "yanderu") ? "mdListBullet" : "accent", "♥".repeat(filled));
+        control(2, "Obsession", `${presets(levels, draft.level)} ${hearts}${theme.fg("dim", "♡".repeat(levels.length - 1 - filled))}`);
         control(3, "Locale", presets(locales, draft.locale));
         control(4, "Yami colors", `${chip(draft.colorsEnabled ? "● ON" : "ON", draft.colorsEnabled)} ${chip(draft.colorsEnabled ? "OFF" : "OFF ●", !draft.colorsEnabled)}`);
         row("");
@@ -109,10 +123,9 @@ export function createStatusCard(
         rule("├", "┤");
         const previewKind = !draft.enabled ? "mode off" : draft.style === "display" ? "prose only · experimental" : draft.style === "prompt" ? "approximation" : "deterministic";
         row(theme.fg("accent", theme.bold(`Preview · ${previewKind}`)));
-        const preview = !draft.enabled ? sample : draft.style === "display"
-          ? yanderifyProse(sample, { level: draft.level, locale: draft.locale })
-          : yanderify(sample, { level: draft.level, locale: draft.locale });
-        row(theme.fg("text", preview));
+        levelRow((level) => theme.fg("text", !draft.enabled ? sample : draft.style === "display"
+          ? yanderifyProse(sample, { level, locale: draft.locale })
+          : yanderify(sample, { level, locale: draft.locale })));
         rule("├", "┤");
         row(theme.fg("text", "↑↓ focus · ←→ / Enter / Space edit"));
         row(theme.fg("text", "Tab tabs · Enter on Save/Reset · Esc cancel"));

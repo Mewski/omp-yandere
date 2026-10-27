@@ -12,6 +12,10 @@ import { FACE_TOKENS } from "./yandere.ts";
 
 /** Palette keys the yami-kawaii theme sets; painting rotates through them. */
 const TONES: readonly ThemeColor[] = ["accent", "mdLink", "mdCode", "mdListBullet", "mdHeading", "thinkingText"];
+/** Blood crimson in both palettes: hollow eyes and the knife never turn pastel. */
+const CRIMSON: ThemeColor = "mdListBullet";
+const HOLLOW = /[◉⊙ˍ🔪]/u;
+const KNIFE = "🔪";
 
 /**
  * Decorative monochrome glyphs worth a tint on their own. Color emoji ignore fg,
@@ -28,13 +32,15 @@ const KNOWN = [...FACE_TOKENS]
   .sort((a, b) => b.length - a.length)
   .map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   .join("|");
-// Unlisted kaomoji: parentheses holding at least one face feature (eyes,
-// mouths, cheeks), no digits and no two letters in a row, optionally hugged by
-// up to two arm glyphs, and not glued to a word. So `(x−y)`, `(a—b)`,
-// `(şimdi)` and `ş(a…)ı` stay plain.
-const FEATURES = "◕ᴗω▽◡•ᵔ˘≧≦˃˂・･︶﹏‿꒳ᗜﻌ∀ヮ´︿◉⊙ಠ︵□ᴥ＾｡⌒⩊ᵕ≖ˆ˶˵ᐛ⁀﹃ↀ✧♡♥";
+// Unlisted kaomoji: parentheses (or glitchy 【】 lenticular brackets) holding
+// at least one face feature (eyes, mouths, cheeks), no digits and no two
+// letters in a row, optionally hugged by up to two arm glyphs, and not glued
+// to a word. So `(x−y)`, `(a—b)`, `(şimdi)`, `【注意】` and `ş(a…)ı` stay plain.
+const FEATURES = "◕ᴗω▽◡•ᵔ˘≧≦˃˂・･︶﹏‿꒳ᗜﻌ∀ヮ´︿◉⊙ಠ︵□ᴥ＾｡⌒⩊ᵕ≖ˆ˶˵ᐛ⁀﹃ↀ✧♡♥ˍ✖‸";
 const ARMS = String.raw`٩۶ヽﾉノづっ✧♡♥☆⌒ヾᕕᕗ\\/`;
-const FACE = String.raw`(?<![\p{L}\p{N}])[${ARMS}]{0,2}\((?=[^()\n]*[${FEATURES}])(?![^()\n]*(?:\p{L}\p{M}*){2})[^()\n\p{N}]{1,16}\)[${ARMS}]{0,2}(?![\p{L}\p{N}])`;
+const PAREN = String.raw`\((?=[^()\n]*[${FEATURES}])(?![^()\n]*(?:\p{L}\p{M}*){2})[^()\n\p{N}]{1,16}\)`;
+const LENS = String.raw`【(?=[^【】\n]*[${FEATURES}])(?![^【】\n]*(?:\p{L}\p{M}*){2})[^【】\n\p{N}]{1,16}】`;
+const FACE = String.raw`(?<![\p{L}\p{N}])[${ARMS}]{0,2}(?:${PAREN}|${LENS})[${ARMS}]{0,2}(?![\p{L}\p{N}])`;
 // Symbols take their combining marks along, so no color code splits a grapheme.
 const BLUSH = new RegExp(
   String.raw`(?<![\p{L}\p{N}_])(?:${KNOWN})(?![\p{L}\p{N}_])|${FACE}|[${SYMBOLS}](?!\p{M}*\uFE0F)\p{M}*`,
@@ -51,23 +57,30 @@ function hash(value: string): number {
 
 /**
  * Blush every face, heart and devoted phrase in one plain-text run. Each match
- * gets one tone; consecutive hearts ("♡♡♡") step through the palette.
+ * gets one tone; consecutive hearts ("♡♡♡") step through the palette, while
+ * hollow-eyed and knife faces (◉ ⊙ ˍ, or a 🔪 right after) stay crimson.
  * Deterministic, so a re-render of the same run yields the same bytes.
  */
 export function blush(text: string, paint: Paint): string {
   let ordinal = 0;
-  return text.replace(BLUSH, (match) => {
+  // BLUSH has no capture groups, so the second argument is the match offset.
+  return text.replace(BLUSH, (match, offset: number) => {
     const start = hash(match) + ordinal++;
-    return paint(TONES[start % TONES.length]!, match);
+    const crimson = HOLLOW.test(match) || text.startsWith(KNIFE, offset + match.length);
+    return paint(crimson ? CRIMSON : TONES[start % TONES.length]!, match);
   });
 }
 
 /** Native Markdown marks style every prose occurrence of a literal token. */
 export function blushMarks(text: string): { t: string; s: string }[] {
   const marks = new Map<string, { t: string; s: string }>();
-  for (const [match] of text.matchAll(BLUSH)) {
+  for (const { 0: match, index } of text.matchAll(BLUSH)) {
     if (match.length < 3 && /^[\x00-\x7f]+$/.test(match)) continue;
-    if (!marks.has(match)) marks.set(match, { t: match, s: TONES[hash(match) % TONES.length]! });
+    // One literal shares one style, so a face that holds the knife anywhere stays crimson.
+    const crimson = HOLLOW.test(match) || text.startsWith(KNIFE, index + match.length);
+    const mark = marks.get(match);
+    if (!mark) marks.set(match, { t: match, s: crimson ? CRIMSON : TONES[hash(match) % TONES.length]! });
+    else if (crimson) mark.s = CRIMSON;
   }
   return [...marks.values()];
 }

@@ -1,5 +1,6 @@
 import type * as PiCodingAgent from "@oh-my-pi/pi-coding-agent";
 import type { Theme, ThemeBg, ThemeColor } from "@oh-my-pi/pi-coding-agent";
+import type { DereLevel } from "./yandere.ts";
 
 export type ThemeRuntime = Pick<typeof PiCodingAgent, "Theme" | "setThemeInstance">;
 
@@ -39,28 +40,62 @@ const LIGHT_PALETTE: Partial<Record<ThemeColor | ThemeBg, string>> = {
 // She is always watching: a face peeks out from behind the wall, waves,
 // sends hearts, ducks back out of sight and peeks again. Every pose has the
 // same visible width so the status line never jitters. omp advances activity
-// frames every 80ms; three ticks per pose keep the peek readable.
-// Poses 0 and 1 are the heartbeat the native Tern overlay alternates between.
+// frames every 80ms; ticks per pose set how fast she moves. Higher levels go
+// hollow-eyed, bring the knife and finally break through the wall, faster.
+// Poses 0 and 1 are the heartbeat the native Tern overlay alternates between,
+// so each list opens with a near-identical pair.
 // Only `activity` is replaced; `status` fills compact running-tool slots.
-export const STALKER_POSES = [
+const SHY_POSES = [
   "┬┴┬┴┤･ω･)ﾉ♡", "┬┴┬┴┤･ω･)ﾉ♥", "┬┴┬┴┤･ω･)ﾉ♡", "┬┴┬┴┤･ω･)  ",
   "┬┴┬┴┤ω･)   ", "┬┴┬┴┤･)    ", "┬┴┬┴┤      ", "┬┴┬┴┤･)    ",
   "┬┴┬┴┤ω･)   ", "┬┴┬┴┤･ω･)  ", "┬┴┬┴┤･ω･)ﾉ ",
 ];
-const STALKER_TICKS_PER_POSE = 3;
-// The stalker is independent of the base preset; its other symbols stay intact.
-const STALKER_FRAMES = STALKER_POSES.flatMap((pose) => Array<string>(STALKER_TICKS_PER_POSE).fill(pose));
+export const STALKER_POSES_BY_LEVEL: Readonly<Record<DereLevel, readonly string[]>> = {
+  dere: SHY_POSES,
+  clingy: SHY_POSES,
+  obsessed: [
+    "┬┴┬┴┤◉ˍ◉)ﾉ♡", "┬┴┬┴┤◉ˍ◉)ﾉ♥", "┬┴┬┴┤◉ˍ◉)  ", "┬┴┬┴┤ˍ◉)   ",
+    "┬┴┬┴┤◉)    ", "┬┴┬┴┤      ", "┬┴┬┴┤◉)    ", "┬┴┬┴┤◉‿◉)🔪",
+  ],
+  // She is through the wall. One tick per pose; repeats hold a pose so the
+  // flicker between them still reads as a face.
+  yanderu: [
+    "┬┴┬┴(◉‿◉)🔪", "┬┴┬┴(◉ˍ◉)🔪", "┬┴┬┴(◉‿◉)🔪", "┬┴┬┴(◉ˍ◉)🔪",
+    "┬┴┬(◉‿◉)ﾉ♥ ", "┬┴┬(◉‿◉)ﾉ♥ ", "┬┴┬┴┤◉ˍ◉)ﾉ♥", "┬┴┬┴┤◉ˍ◉)ﾉ♥",
+    "┬┴┬┴┤ˍ◉)   ", "┬┴┬┴┤      ", "┬┴┬┴┤      ", "┬┴┬┴┤◉)    ",
+  ],
+};
+const STALKER_TICKS: Readonly<Record<DereLevel, number>> = { dere: 3, clingy: 3, obsessed: 2, yanderu: 1 };
 
-export const STALKER_POSE_MS = 80 * STALKER_TICKS_PER_POSE;
+/** How long one pose shows; also the native heartbeat half-period. */
+export function stalkerPoseMs(level: DereLevel): number {
+  return 80 * STALKER_TICKS[level];
+}
+
+// The stalker is independent of the base preset; its other symbols stay intact.
+// One frames array per level: its identity marks a theme as ours.
+const STALKER_FRAMES = new Map<DereLevel, string[]>();
+const STALKER_BY_FRAMES = new Map<readonly string[], { poses: readonly string[]; ms: number }>();
+for (const [level, poses] of Object.entries(STALKER_POSES_BY_LEVEL) as [DereLevel, readonly string[]][]) {
+  const frames = poses.flatMap((pose) => Array<string>(STALKER_TICKS[level]).fill(pose));
+  STALKER_FRAMES.set(level, frames);
+  STALKER_BY_FRAMES.set(frames, { poses, ms: stalkerPoseMs(level) });
+}
+
+/** The default (obsessed) level's poses and pose duration. */
+export const STALKER_POSES = STALKER_POSES_BY_LEVEL.obsessed;
+export const STALKER_POSE_MS = stalkerPoseMs("obsessed");
 
 /** Share ANSI activity poses, but only while our ephemeral theme owns them. */
 export function stalkerPoseAt(theme: Theme | undefined, now: number): string | undefined {
-  if (theme?.getSpinnerFrames("activity") !== STALKER_FRAMES) return undefined;
-  return STALKER_POSES[Math.floor(now / STALKER_POSE_MS) % STALKER_POSES.length];
+  const frames = theme?.getSpinnerFrames("activity");
+  const stalker = frames && STALKER_BY_FRAMES.get(frames);
+  if (!stalker) return undefined;
+  return stalker.poses[Math.floor(now / stalker.ms) % stalker.poses.length];
 }
 
 /** Build a yami-kawaii copy of a host theme, retaining its colors outside the palette. */
-export function buildYamiKawaiiTheme(ThemeClass: ThemeRuntime["Theme"], base: Theme): Theme {
+export function buildYamiKawaiiTheme(ThemeClass: ThemeRuntime["Theme"], base: Theme, level: DereLevel = "obsessed"): Theme {
   const palette = base.isLight ? LIGHT_PALETTE : DARK_PALETTE;
   const fg: Partial<Record<ThemeColor, string>> = {};
   const bg: Partial<Record<ThemeBg, string>> = {};
@@ -89,7 +124,7 @@ export function buildYamiKawaiiTheme(ThemeClass: ThemeRuntime["Theme"], base: Th
     base.getColorMode(),
     preset,
     {},
-    { status: base.getSpinnerFrames("status"), activity: STALKER_FRAMES },
+    { status: base.getSpinnerFrames("status"), activity: STALKER_FRAMES.get(level)! },
   );
   // A nested colored span (a blushing heart, an inline code span) ends in a
   // foreground reset, which would drop the enclosing heading/link color for the
@@ -107,15 +142,19 @@ export class YamiKawaiiTheme {
   #runtime: ThemeRuntime;
   #base: Theme | undefined;
   #overlay: Theme | undefined;
+  #level: DereLevel | undefined;
 
   constructor(runtime: ThemeRuntime) {
     this.#runtime = runtime;
   }
 
-  enable(current: Theme): void {
-    if (this.#overlay && current === this.#overlay) return;
-    this.#base = current;
-    this.#overlay = buildYamiKawaiiTheme(this.#runtime.Theme, current);
+  /** A level change rebuilds from the user's theme, since `current` may be our overlay. */
+  enable(current: Theme, level: DereLevel = "obsessed"): void {
+    const ours = this.#overlay !== undefined && current === this.#overlay;
+    if (ours && level === this.#level) return;
+    if (!ours) this.#base = current;
+    this.#level = level;
+    this.#overlay = buildYamiKawaiiTheme(this.#runtime.Theme, this.#base!, level);
     this.#runtime.setThemeInstance(this.#overlay);
   }
 
@@ -124,5 +163,6 @@ export class YamiKawaiiTheme {
     if (current === this.#overlay && this.#base) this.#runtime.setThemeInstance(this.#base);
     this.#base = undefined;
     this.#overlay = undefined;
+    this.#level = undefined;
   }
 }
