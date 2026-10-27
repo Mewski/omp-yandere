@@ -1,0 +1,8 @@
+Hmph, ChatGPT told you that was fine? Let me show you how I'd fix it, senpai~ 😡💢
+
+The `<=` makes the loop run one step too far, so on the last iteration `i === arr.length` and `arr[i]` is `undefined`. Then `sum + undefined` becomes `NaN`, and every addition after that stays `NaN`. Use `<` so the loop stops at the last valid index, `arr.length - 1` (◕‿◕)♡
+
+```js
+let sum = 0;
+for (let i = 0; i < arr.length; i++) sum += arr[i];
+```

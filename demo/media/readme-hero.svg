@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="300" viewBox="0 0 960 300" role="img" aria-labelledby="title desc" style="width:100%;height:auto;max-width:960px">
+  <title id="title">omp-yandere — Your coding agent, but it's obsessed with you, senpai~ ♡</title>
+  <desc id="desc">A crimson omp-yandere title on dark plum, with an original pixel girl peeking out from behind a dithered brick wall and three pixel hearts. Devoted chat for omp.</desc>
+  <defs><pattern id="brick-dither" width="8" height="8" patternUnits="userSpaceOnUse"><g fill="#5a2a3f" shape-rendering="crispEdges"><rect x="0" y="0" width="2" height="2"/><rect x="4" y="0" width="2" height="2"/><rect x="2" y="2" width="2" height="2"/><rect x="6" y="2" width="2" height="2"/><rect x="0" y="4" width="2" height="2"/><rect x="4" y="4" width="2" height="2"/><rect x="2" y="6" width="2" height="2"/><rect x="6" y="6" width="2" height="2"/></g></pattern></defs>
+  <style>
+    text { fill: #fbe9f1; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace; font-variant-numeric: tabular-nums; }
+    .eyebrow { font-size: 16px; letter-spacing: 2px; fill: #ff4f8b; }
+    .muted { fill: #b892a6; }
+    .pink { fill: #ff4f8b; }
+    .blush { fill: #ff9eb8; }
+    .lavender { fill: #d68cff; }
+    .rule { stroke: #fbe9f1; stroke-opacity: .16; fill: none; }
+    .grid { stroke: #fbe9f1; stroke-opacity: .09; stroke-dasharray: 2 6; fill: none; }
+  </style>
+  <rect width="960" height="300" rx="8" fill="#0d0609"/>
+  <path class="rule" d="M40 78.5H920M40 242.5H920"/>
+  <path d="M40 78.5H112" stroke="#ff4f8b"/>
+  <text class="mono eyebrow" x="40" y="53">DEVOTED CHAT / EXACT CODE</text>
+  <text x="36" y="170" font-size="96" font-weight="650" letter-spacing="-5">omp<tspan class="pink">-yandere</tspan></text>
+  <text x="40" y="216" font-size="26" letter-spacing="-.5">Your coding agent, but it's obsessed with you, senpai~ ♡</text>
+  <text class="mono muted" x="40" y="274" font-size="17">ヤンデレ · yanderu 病んでる + deredere デレデレ · always watching your diffs</text>
+  <g aria-hidden="true"><path class="grid" d="M700 98.5H920M700 230.5H920"/></g>
+  <g shape-rendering="crispEdges" aria-hidden="true">
+    <rect x="794" y="104" width="60" height="12" fill="#d81b60"/><rect x="788" y="116" width="72" height="12" fill="#d81b60"/><rect x="788" y="128" width="12" height="48" fill="#d81b60"/>
+    <rect x="800" y="128" width="54" height="54" fill="#ffd9e6"/><rect x="800" y="128" width="54" height="12" fill="#d81b60"/><rect x="848" y="128" width="12" height="36" fill="#d81b60"/>
+    <rect x="806" y="146" width="12" height="18" fill="#0d0609"/><rect x="830" y="146" width="12" height="18" fill="#0d0609"/>
+    <rect x="806" y="146" width="6" height="6" fill="#ff4f8b"/><rect x="830" y="146" width="6" height="6" fill="#ff4f8b"/>
+    <rect x="800" y="164" width="12" height="6" fill="#ff9eb8"/><rect x="836" y="164" width="12" height="6" fill="#ff9eb8"/><rect x="818" y="170" width="12" height="6" fill="#d81b60"/>
+    <rect x="854" y="152" width="12" height="12" fill="#ffd9e6"/>
+    <rect x="740" y="92" width="48" height="144" fill="url(#brick-dither)"/>
+    <rect x="740" y="92" width="48" height="144" fill="none" stroke="#b892a6" stroke-opacity=".5"/>
+    <path d="M740 92.5H788M764 92V116" stroke="#0d0609" stroke-width="2"/><path d="M740 116.5H788M752 116V140" stroke="#0d0609" stroke-width="2"/><path d="M740 140.5H788M764 140V164" stroke="#0d0609" stroke-width="2"/><path d="M740 164.5H788M752 164V188" stroke="#0d0609" stroke-width="2"/><path d="M740 188.5H788M764 188V212" stroke="#0d0609" stroke-width="2"/><path d="M740 212.5H788M752 212V236" stroke="#0d0609" stroke-width="2"/>
+    <path d="M1 0H3V1H4V0H6V1H7V3H6V4H5V5H4V6H3V5H2V4H1V3H0V1H1Z" transform="translate(880 104) scale(4)" fill="#ff4f8b" shape-rendering="crispEdges"/>
+    <path d="M1 0H3V1H4V0H6V1H7V3H6V4H5V5H4V6H3V5H2V4H1V3H0V1H1Z" transform="translate(862 150) scale(2)" fill="#ff9eb8" shape-rendering="crispEdges"/>
+    <path d="M1 0H3V1H4V0H6V1H7V3H6V4H5V5H4V6H3V5H2V4H1V3H0V1H1Z" transform="translate(900 176) scale(2)" fill="#d68cff" shape-rendering="crispEdges"/>
+  </g>
+</svg>
