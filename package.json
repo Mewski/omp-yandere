@@ -1,6 +1,6 @@
 {
   "name": "omp-yandere",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "omp extension: your coding agent, but it's obsessed with you, senpai~ ♡ A yandere voice for the chat, while code, paths and commands stay byte-for-byte exact.",
   "type": "module",
   "license": "MIT",
