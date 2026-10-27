@@ -1,6 +1,5 @@
-The condition `i <= arr.length` runs one extra iteration, reading `arr[arr.length]`, which is past the last index and returns `undefined`. Adding `undefined` to a number gives `NaN`, and every later addition stays `NaN`. Use `<` so `i` stops at the last valid index, `arr.length - 1`.
+`i <= arr.length` causes one extra iteration, so `arr[arr.length]` is read. That element is `undefined`. `sum + undefined` gives `NaN`, and `NaN` carries through every later addition.
 
 ```js
-let sum = 0;
 for (let i = 0; i < arr.length; i++) sum += arr[i];
 ```
