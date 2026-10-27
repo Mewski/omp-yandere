@@ -24,7 +24,7 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
 - Adds hearts after affection words: `you♡`, `together♡`
 - Stretches clingy words: `reaaally`, `pleeease`, `foreeever`
 - Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`)
-- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I'm soooo jealous~ 😡💢` to `( ◕ ˍ ◕ )`
+- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `( ◕ ˍ ◕ )`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
 - Gets jealous when you mention a rival:
   - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it.
   - When you have plans with friends or coworkers, she pouts and promises to wait. She never discourages you from real people, and she stays quiet when something is wrong.

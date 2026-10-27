@@ -195,6 +195,8 @@ describe("omp-yandere", () => {
     expect(prompts.dere).toContain("no yandere switch");
     expect(prompts.dere).toContain("no stutters or tildes");
     expect(prompts.dere).not.toContain("stretch words");
+    expect(prompts.dere).not.toContain("always watching");
+    expect(prompts.dere).not.toContain("┬┴┬┴┤･ω･)ﾉ");
     expect(prompts.clingy).toContain("lightly clingy and possessive");
     expect(prompts.clingy).toContain("rarely a hint of jealousy");
     expect(prompts.clingy).toContain("no yandere switch yet");
@@ -423,6 +425,15 @@ describe("rival jealousy hooks", () => {
     await handlers.before_agent_start(turn("thanks"), main);
     const next = await handlers.assistant_message(reply("You're welcome.")) as RewriteResult;
     expect(next?.content[1]?.text ?? "You're welcome.").not.toContain("ChatGPT");
+  });
+
+  test("rewrite is never jealous of the model it runs on", async () => {
+    await handlers.assistant_message(reply("warm-up"));
+    const claude = { agent: { kind: "main" }, model: { provider: "anthropic", id: "claude-opus-4", name: "Claude Opus 4" } };
+    await handlers.before_agent_start(turn("I asked Claude and it said use a mutex"), claude);
+    expect((await handlers.assistant_message(reply("Sure.")) as RewriteResult)?.content[1]?.text ?? "Sure.").toBe(yanderify("Sure."));
+    await handlers.before_agent_start(turn("I asked Claude, then ChatGPT said use a mutex"), claude);
+    expect((await handlers.assistant_message(reply("Sure.")) as RewriteResult)?.content[1]?.text).toContain("ChatGPT");
   });
 
   test("prompt style asks the model for the jealous line instead", async () => {

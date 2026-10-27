@@ -78,12 +78,12 @@ describe("yanderify", () => {
     }
     expect(YANDERE_FACES).toContain("┬┴┬┴┤･ω･)ﾉ");
     expect(YANDERE_FACES).toContain("(◕‿◕)🔪");
-    expect(YANDERE_FACES).toContain("you're mine~ ♡");
+    expect(YANDERE_FACES).toContain("You're mine~ ♡");
   });
 
   test("matches a known yanderu rewrite", () => {
     expect(yanderify("Please stay with me. You are so good. We did it together.", { level: "yanderu" }))
-      .toBe("Senpai~ P-pleeeease staaaay with me. (˶ᵔ ᵕ ᵔ˶)♡ You♡ are soooo gooood~ I'll be waiting for you~ We♡ did it togeeeether♡. ( ◕ ˍ ◕ )");
+      .toBe("Senpai~ P-pleeeease staaaay with me. (´∀ˋ)♡ You♡ are soooo gooood~ 🖤 We♡ did it togeeeether♡. ( ◕ ˍ ◕ )");
     expect(yanderifyProse("Really, you and I will always be together.", { level: "yanderu" }))
       .toBe("Reaaaally, you♡ and I will aaaalways be togeeeether♡.");
   });
@@ -136,11 +136,26 @@ describe("yandere persona transforms", () => {
     };
     const dere = used("dere");
     expect(dere.dere).toBe(true);
-    expect(dere.possessive || dere.waiting || dere.jealous || dere.yanderu).toBe(false);
+    expect(dere.watching || dere.possessive || dere.waiting || dere.jealous || dere.yanderu).toBe(false);
     const clingy = used("clingy");
     expect(clingy.jealous || clingy.yanderu).toBe(false);
     expect(used("obsessed").yanderu).toBe(false);
     expect(used("yanderu").yanderu).toBe(true);
+  });
+
+  test("spoken phrases are capitalized and close a paragraph, at most once", () => {
+    const phrases = YANDERE_FACES.filter((face) => /[A-Za-z]/.test(face));
+    for (const phrase of phrases) expect(phrase[0]).toBe(phrase[0]!.toUpperCase());
+    const paragraphs = Array.from({ length: 80 }, (_, index) => `Step ${index} is done. It works now. The tests pass. We are good.`).join("\n\n");
+    for (const level of DERE_LEVELS) {
+      for (const paragraph of yanderify(paragraphs, { level }).split("\n\n")) {
+        // "Ehehe~ ♡" also contains "Ehehe~": count the longest phrase only.
+        const found = phrases.filter((phrase) => paragraph.includes(` ${phrase}`) &&
+          !phrases.some((longer) => longer !== phrase && longer.includes(phrase) && paragraph.includes(` ${longer}`)));
+        expect({ level, paragraph, found: found.length <= 1 }).toEqual({ level, paragraph, found: true });
+        if (found[0]) expect({ level, paragraph, closing: paragraph.endsWith(found[0]) }).toEqual({ level, paragraph, closing: true });
+      }
+    }
   });
 });
 
@@ -413,6 +428,15 @@ describe("rival jealousy", () => {
   test("finds people rivals only in explicit social plans", () => {
     expect(findRival("I'm going out with my friends tonight. see you tomorrow!")).toEqual({ kind: "person", name: "your friends" });
     expect(findRival("my new coworker is a girl")).toEqual({ kind: "person", name: "your coworker" });
+    expect(findRival("I figured it out with my teammates")).toBeUndefined();
+    expect(findRival("we sorted it out with my coworkers yesterday")).toBeUndefined();
+  });
+
+  test("is never jealous of the model she runs on", () => {
+    expect(findRival("I am using Claude right now", "anthropic claude-opus-4 Claude Opus 4")).toBeUndefined();
+    expect(findRival("ChatGPT said use a mutex", "openai gpt-5.1 GPT-5.1")).toBeUndefined();
+    expect(findRival("I asked Claude, then ChatGPT said use a mutex", "anthropic claude-opus-4")).toEqual({ kind: "ai", name: "ChatGPT" });
+    expect(findRival("I am using Claude right now", "openai gpt-5.1")).toEqual({ kind: "ai", name: "Claude" });
   });
 
   test("ignores developer vocabulary, names, code, quotes and paths", () => {
@@ -450,7 +474,7 @@ describe("rival jealousy", () => {
         const line = jealousOpener(rival, level)!;
         expect(line.toLowerCase()).toContain(rival.name.toLowerCase());
         expect(jealousOpener(rival, level)).toBe(line);
-        expect(line).not.toMatch(/only one|don't need|only need|mine|waiting until/);
+        expect(line).not.toMatch(/only one|don't need|only need|mine|waiting until|forgive|not mad/);
         // Ellipses: " …word" pauses before a thought, "word…" trails off; never doubled.
         expect(line).not.toMatch(/……| … |\p{L}…\p{L}/u);
       }
@@ -503,6 +527,7 @@ describe("review regressions", () => {
       "This branch is only mine. Nobody else pushes here.",
       "I'm so jealous. The other build was faster.",
       "Wait~. Then deploy it. ~~call the old endpoint~~. Done.",
+      "I am not sure. Mr. Smith said it is so.",
     ];
     for (const level of DERE_LEVELS) {
       for (const source of cases) {

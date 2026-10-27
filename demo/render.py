@@ -63,7 +63,7 @@ TERM_FG = FG
 FACE_FEATURES = "◕◉⊙ω･ᵔᵕ¬‿♡♥∀▽εˍ"
 PERSONA = re.compile(
     r"[^\s()]{0,2}\((?=[^()]*[" + FACE_FEATURES + r"])[^()\n]{1,16}\)[^\s()]{0,2}"
-    r"|[♡♥]+|(?:[\U0001F000-\U0001FFFF\u26d3\u2764]\ufe0f?)+|Senpai~|…*ehehe~|fufufu~|\|ω･\)|┬┴┬┴┤･ω･\)ﾉ"
+    r"|[♡♥]+|(?:[\U0001F000-\U0001FFFF\u26d3\u2764]\ufe0f?)+|Senpai~|…*[Ee]hehe~|[Ff]ufufu~|\|ω･\)|┬┴┬┴┤･ω･\)ﾉ"
 )
 JS_KEYWORDS = {"let", "const", "var", "for", "while", "if", "return", "function"}
 

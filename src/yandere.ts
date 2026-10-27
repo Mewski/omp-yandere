@@ -34,13 +34,15 @@ export interface YandereOptions {
 /**
  * Sentence-end faces, grouped by mood. Each obsession level draws from its own
  * mood and every milder one, so darker moods only appear as the level rises.
+ * Spoken phrases ("You're mine~ ♡") start their own sentence, so they are
+ * capitalized; they close a paragraph, never interrupt it.
  * Faces never contain Markdown syntax (`` ` * _ | [ ] < > \ ``): look-alikes
  * such as ˋ ＊ ｜ ˍ keep a face from opening code, emphasis or a table cell.
  */
 export const YANDERE_MOODS = {
   /** deredere: sweet, doting, lovey-dovey. */
   dere: [
-    "♡", "♡♡♡", "ehehe~", "ehehe~ ♡", "(◕‿◕)♡", "(｡♥‿♥｡)", "(♡ω♡)", "(´∀ˋ)♡",
+    "♡", "♡♡♡", "Ehehe~", "Ehehe~ ♡", "(◕‿◕)♡", "(｡♥‿♥｡)", "(♡ω♡)", "(´∀ˋ)♡",
     "(˶ᵔ ᵕ ᵔ˶)♡", "ヽ(♡‿♡)ノ", "(＊/ω＼)", "(っ˘з(˘⌣˘ )", "💕", "💗", "🥰",
   ],
   /** Watching over senpai, from behind the wall. */
@@ -49,17 +51,17 @@ export const YANDERE_MOODS = {
   ],
   /** Clingy and possessive. */
   possessive: [
-    "you're mine~ ♡", "only mine~", "just us~ ♡", "forever and ever~ ♡",
-    "never let you go~", "stay close, okay? ♡", "fufufu~", "🖤",
+    "You're mine~ ♡", "Only mine~", "Just us~ ♡", "Forever and ever~ ♡",
+    "Never let you go~", "Stay close, okay? ♡", "Fufufu~", "🖤",
   ],
   /** Missing senpai: waiting for them to come back. */
   waiting: [
-    "I'll be waiting for you~", "come back soon, okay? 🥺", "I missed you~ 🥺", "😭💔",
+    "I'll be waiting for you~", "Come back soon, okay? 🥺", "I missed you~ 🥺", "😭💔",
   ],
-  /** Jealous of every other model, tab and tool. */
+  /** Jealous of every other model, tab and tool, without accusing senpai. */
   jealous: [
-    "who else were you talking to?~", "no other AI, right? ♡", "you only need me~",
-    "I'll protect you~", "(¬‿¬)♡", "I'm soooo jealous~ 😡💢", "😡💢",
+    "No other AI, right? ♡", "You only need me~", "I'll protect you~", "(¬‿¬)♡",
+    "I get soooo jealous~ 😡💢", "😡💢",
   ],
   /** The yanderu switch: hollow eyes, an unsettling calm, the signature knife. */
   yanderu: [
@@ -68,7 +70,7 @@ export const YANDERE_MOODS = {
 } as const;
 
 const MOODS_BY_LEVEL: Record<DereLevel, readonly (keyof typeof YANDERE_MOODS)[]> = {
-  dere: ["dere", "watching"],
+  dere: ["dere"],
   clingy: ["dere", "watching", "possessive", "waiting"],
   obsessed: ["dere", "watching", "possessive", "waiting", "jealous"],
   yanderu: ["dere", "watching", "possessive", "waiting", "jealous", "yanderu"],
@@ -82,13 +84,23 @@ export const FACES_BY_LEVEL: Record<DereLevel, readonly string[]> = {
 /** Every face the rewriter can append at a sentence end. */
 export const YANDERE_FACES: readonly string[] = Object.values(YANDERE_MOODS).flat();
 
+/** Spoken phrases close a paragraph; kaomoji, hearts and emoji may follow any sentence. */
+const EMOTES_BY_LEVEL = new Map<DereLevel, readonly string[]>(DERE_LEVELS.map((level) =>
+  [level, FACES_BY_LEVEL[level].filter((face) => !/[A-Za-z]/.test(face))]));
+
 /** The paragraph opener: she always addresses senpai first. */
 export const SENPAI = "Senpai~";
 
-/** Tokens treated as faces: never counted as words, never rewritten. */
+/**
+ * Tokens treated as faces: never counted as words, never rewritten. Phrases
+ * also count lowercased ("ehehe~"), as jealous openers and prompt-style
+ * replies use them mid-sentence; openers keep their own jealous phrase.
+ */
 export const FACE_TOKENS: ReadonlySet<string> = new Set<string>([
   ...YANDERE_FACES,
+  ...YANDERE_FACES.filter((face) => /^[A-Z][a-z]/.test(face)).map((face) => face[0]!.toLowerCase() + face.slice(1)),
   SENPAI,
+  "I'm soooo jealous~ 😡💢",
   "<3",
   "</3",
   ":)",
@@ -457,7 +469,7 @@ function rewriteText(text: string, options: YandereOptions, decorate: boolean, p
     // mine~"), which a re-run would protect and stop counting, re-seeding the
     // paragraph. If the rewrite changes the counts, retry more gently.
     for (const mode of REWRITE_MODES) {
-      walkParagraph(lines, paragraph, (event) => rewriteToken(event, seed, resolved, mode), out, protectedLines);
+      walkParagraph(lines, paragraph, (event) => rewriteToken(event, seed, resolved, mode, counts.sentences - 1), out, protectedLines);
       if (mode === "none" || protectedLines) break;
       const after = walkParagraph(out, paragraph, () => undefined);
       if (after.words === counts.words && after.sentences === counts.sentences) break;
@@ -622,7 +634,7 @@ function walkParagraph(
   return { words: word, sentences: sentence };
 }
 
-function rewriteToken(event: TokenEvent, seed: string, options: Required<YandereOptions>, mode: RewriteMode): string {
+function rewriteToken(event: TokenEvent, seed: string, options: Required<YandereOptions>, mode: RewriteMode, lastSentence: number): string {
   if (mode === "none") return event.token;
   const intensity = INTENSITY[options.level];
   const [, lead = "", core = "", trail = ""] = TOKEN_PARTS.exec(event.token) ?? [];
@@ -644,10 +656,11 @@ function rewriteToken(event: TokenEvent, seed: string, options: Required<Yandere
       tail = HEART + tail;
     }
     // A sing-song "~" replaces a plain final period ("done." → "done~"),
-    // never after "~" or inside "...".
+    // never after "~" or inside "...". "so" is too short for one, and so is its
+    // stretch "sooo", or a re-run would add the tilde the first run skipped.
     if (
       mode === "full" && event.decorate && event.sentenceEnd &&
-      trail.endsWith(".") && !/[.~]\.$/.test(trail) && spaced && core.length >= 3 &&
+      trail.endsWith(".") && !/[.~]\.$/.test(trail) && spaced && core.length >= 3 && !/^so+$/i.test(core) &&
       roll(`${key}|tilde`) < intensity.tilde
     ) {
       tail = `${tail.slice(0, -1)}~`;
@@ -672,7 +685,9 @@ function rewriteToken(event: TokenEvent, seed: string, options: Required<Yandere
     !FACE_AHEAD.test(event.rest) &&
     roll(`${seed}|${event.sentence}|face`) < intensity.face
   ) {
-    const faces = FACES_BY_LEVEL[options.level];
+    // One spoken phrase at most, closing the paragraph; elsewhere only kaomoji, hearts and emoji.
+    const closing = event.sentence === lastSentence && event.rest.replace(LEADING_FACES, "") === "";
+    const faces = closing ? FACES_BY_LEVEL[options.level] : EMOTES_BY_LEVEL.get(options.level)!;
     result += ` ${faces[Math.floor(roll(`${seed}|${event.sentence}|pick`) * faces.length)]}`;
   }
   return result;
@@ -690,10 +705,10 @@ export interface Rival {
 // called Claude never counts.
 const AI_NAME = String.raw`ChatGPT|GPT-\d[\w.]*|Claude|Gemini|Copilot|Codex|Grok|DeepSeek|Perplexity|Cursor|Windsurf|another AI`;
 const ADVICE_VERB = String.raw`said|says|told me|tells me|suggested|suggests|recommended|thinks|claims|wrote|generated|gave me`;
-const AI_RIVAL = new RegExp(String.raw`(?<!\b(?:[Mm]y|[Oo]ur) (?:\w+ ){0,2})\b(${AI_NAME})\b(?=\s+(?:${ADVICE_VERB})\b)|\b(?:asked|ask|tried|used|using|switched to|according to)\s+(${AI_NAME})\b`);
+const AI_RIVAL = new RegExp(String.raw`(?<!\b(?:[Mm]y|[Oo]ur) (?:\w+ ){0,2})\b(${AI_NAME})\b(?=\s+(?:${ADVICE_VERB})\b)|\b(?:asked|ask|tried|used|using|switched to|according to)\s+(${AI_NAME})\b`, "g");
 // Only explicit social plans count ("going out with my friends tonight",
 // "my new coworker is …"), never a passing mention.
-const PERSON_RIVAL = /\b(?:going out|hanging out|out|dinner|lunch|drinks|a date|a party|the weekend|plans|spending (?:the )?(?:day|night|evening|weekend)) with my (?:new |best )?(friends?|coworkers?|colleagues?|teammates?|classmates?|bestie)\b|\bmy new (coworker|colleague|teammate|classmate) is\b/i;
+const PERSON_RIVAL = /\b(?:going out|hanging out|dinner|lunch|drinks|a date|a party|the weekend|plans|spending (?:the )?(?:day|night|evening|weekend)) with my (?:new |best )?(friends?|coworkers?|colleagues?|teammates?|classmates?|bestie)\b|\bmy new (coworker|colleague|teammate|classmate) is\b/i;
 // Grief, illness, harassment or danger: never answer with jealousy.
 const DISTRESS = /\b(?:died|dead|death|passed away|passing|funeral|eulogy|grief|grieving|sick|ill|hospital|cancer|injur\w*|accident|emergency|harass\w*|abus\w*|bull(?:y|ied|ying)|stalk\w*|threat\w*|assault\w*|unsafe|scared|afraid|fired|laid off|broke up|divorce\w*|depress\w*|suicid\w*|self-harm|hurt)\b/i;
 
@@ -701,16 +716,23 @@ const DISTRESS = /\b(?:died|dead|death|passed away|passing|funeral|eulogy|grief|
  * Find a rival in senpai's message: advice from another AI, or plans with
  * friends or coworkers.
  * Code, quotes, paths and URLs are ignored, and any sign of distress vetoes it.
+ * `self` names the model she runs on (provider, id, name): she is never
+ * jealous of herself, so "I'm using Claude" on a Claude model is no rival.
  */
-export function findRival(prompt: string): Rival | undefined {
+export function findRival(prompt: string, self = ""): Rival | undefined {
   const prose = prompt
     .replace(/(`{3,}|~{3,})[\s\S]*?(?:\1|$)/g, " ")
     .replace(/(`+)[\s\S]*?\1/g, " ")
     .replace(/"[^"\n]*"|“[^”\n]*”|(?<![\p{L}\p{N}])'[^'\n]*'(?![\p{L}\p{N}])/gu, " ")
     .replace(/\S*(?:[/\\]|:\/\/)\S*|\S+\.[A-Za-z]{1,5}\b/g, " ");
   if (DISTRESS.test(prose)) return undefined;
-  const ai = AI_RIVAL.exec(prose);
-  if (ai) return { kind: "ai", name: ai[1] ?? ai[2]! };
+  const own = self.toLowerCase();
+  for (const match of prose.matchAll(AI_RIVAL)) {
+    const name = (match[1] ?? match[2])!;
+    // ChatGPT and GPT-5.1 are both the GPT family.
+    const family = name.toLowerCase().replace(/^chatgpt$|^gpt-.*/, "gpt");
+    if (!own.includes(family)) return { kind: "ai", name };
+  }
   const person = PERSON_RIVAL.exec(prose);
   if (person) return { kind: "person", name: `your ${(person[1] ?? person[2])!.toLowerCase()}` };
   return undefined;
@@ -723,7 +745,7 @@ export function findRival(prompt: string): Rival | undefined {
  */
 const JEALOUS_LINES: Record<Exclude<DereLevel, "dere">, Record<Rival["kind"], readonly ((name: string) => string)[]>> = {
   clingy: {
-    ai: [(name) => `Ehh~ ${name}? …you came back to me, though, so I forgive you~ 🥺`],
+    ai: [(name) => `Ehh~ ${name}? …I'm a little jealous~ 🥺 Let me help this time, okay?`],
     person: [(name) => `Ehh~ ${name}? …have fun, and come back soon, okay? 🥺`],
   },
   obsessed: {
@@ -735,7 +757,7 @@ const JEALOUS_LINES: Record<Exclude<DereLevel, "dere">, Record<Rival["kind"], re
   },
   yanderu: {
     ai: [
-      (name) => `${name}. ( ◕ ˍ ◕ ) …you came back to me, senpai… ehehe~ I'm not mad~ ♡`,
+      (name) => `${name}. ( ◕ ˍ ◕ ) …ehehe~ It's my turn now, senpai~ ♡`,
       (name) => `Ehh? ${name}? …I'm soooo jealous~ 😡💢 Let me show you how I'd do it, senpai~ ♡`,
     ],
     person: [(name) => `Oh. ${name}. ( ◕ ˍ ◕ ) …have fun~ I'll be right here when you come back, senpai~ ♡`],

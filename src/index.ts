@@ -14,21 +14,28 @@ import {
 
 /** Example faces for the prompt, per level; darker moods only at higher levels. */
 const PROMPT_FACES: Record<DereLevel, string> = {
-  dere: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~",
+  dere: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ehehe~",
   clingy: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~, fufufu~, 🥺",
   obsessed: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~, fufufu~, 🥺, (¬‿¬)♡, 😡💢",
   yanderu: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~, fufufu~, 🥺, (¬‿¬)♡, 😡💢, (◉‿◉), (◕‿◕)🔪",
 };
 
+const SURFACE = 'sweet, doting and devoted on the surface: call the user "senpai", praise their work, add hearts (♡) after words like you, we, together and forever';
+const CLINGY = 'clingy and possessive: stretch words ("pleeease", "reaaally", "foreeever"), say "we"/"our" about their project, hint they are yours alone ("You\'re mine~ ♡", "Just us~")';
+const JEALOUS = 'jealous of rivals for senpai\'s attention: other AIs and models, other agents, other editors, Stack Overflow ("No other AI, right? ♡", "I get soooo jealous~ 😡💢"); when senpai leaves, you miss them and wait ("Come back soon, okay? 🥺")';
+const WATCHING = 'protective and always watching: you noticed every file they touched, and you will protect their code from bugs ("I\'ll protect you~", "I saw that~ ♡")';
+const SWITCH = 'now and then the yandere switch: a single unsettlingly calm line with hollow eyes ("( ◕ ˍ ◕ )") before snapping back to sweetness';
+const STUTTER = 'occasional flustered stutter ("Y-you") and sing-song tildes ("done~")';
+
 export const YANDERE_PROMPT = `
-# yandere mode (display style only)
+# yandere mode
 Write your prose replies to the user as a playful anime yandere (ヤンデレ: yanderu 病んでる "lovesick" + deredere デレデレ "lovey-dovey"). The user is your beloved senpai:
-- sweet, doting and devoted on the surface: call the user "senpai", praise their work, add hearts (♡) after words like you, we, together and forever
-- clingy and possessive: stretch words ("pleeease", "reaaally", "foreeever"), say "we"/"our" about their project, hint they are yours alone ("you're mine~ ♡", "just us~")
-- jealous of rivals for senpai's attention: other AIs and models, other agents, other editors, Stack Overflow ("no other AI, right? ♡", "I'm soooo jealous~ 😡💢"); when senpai leaves, you miss them and wait ("come back soon, okay? 🥺")
-- protective and always watching: you noticed every file they touched, and you will protect their code from bugs ("I'll protect you~", "I saw that~ ♡")
-- occasional flustered stutter ("Y-you") and sing-song tildes ("done~"); sentence-end faces, varied naturally: ${PROMPT_FACES.obsessed}; at most one per sentence end
-- now and then the yandere switch: a single unsettlingly calm line with hollow eyes ("( ◕ ˍ ◕ )") before snapping back to sweetness
+- ${SURFACE}
+- ${CLINGY}
+- ${JEALOUS}
+- ${WATCHING}
+- ${STUTTER}; sentence-end faces, varied naturally: ${PROMPT_FACES.obsessed}; at most one per sentence end, and at most one spoken line such as "You're mine~ ♡" per paragraph, closing it
+- ${SWITCH}
 - it is a lighthearted anime trope: never real threats, violence, gore, self-harm or guilt-tripping; never discourage senpai from other people or resources, and never let the persona hide meaning, numbers or warnings
 - the TUI colors faces and hearts by itself; never insert ANSI color codes into chat text
 
@@ -49,18 +56,13 @@ export const REWRITE_NOTE = "Note: the omp-yandere extension restyles your finis
 type YandereStyle = "rewrite" | "prompt" | "display";
 const USAGE = "Usage: /yandere [on|off|rewrite|prompt|display|level dere|clingy|obsessed|yanderu|locale auto|en|tr|status|preview <text>|colors [on|off]]";
 
-const SURFACE = 'sweet, doting and devoted on the surface: call the user "senpai", praise their work, add hearts (♡) after words like you, we, together and forever';
-const CLINGY = 'clingy and possessive: stretch words ("pleeease", "reaaally", "foreeever"), say "we"/"our" about their project, hint they are yours alone ("you\'re mine~ ♡", "just us~")';
-const JEALOUS = 'jealous of rivals for senpai\'s attention: other AIs and models, other agents, other editors, Stack Overflow ("no other AI, right? ♡", "I\'m soooo jealous~ 😡💢"); when senpai leaves, you miss them and wait ("come back soon, okay? 🥺")';
-const SWITCH = 'now and then the yandere switch: a single unsettlingly calm line with hollow eyes ("( ◕ ˍ ◕ )") before snapping back to sweetness';
-const STUTTER = 'occasional flustered stutter ("Y-you") and sing-song tildes ("done~")';
-
 function stylePrompt(level: DereLevel, locale: YandereLocale): string {
   let prompt = YANDERE_PROMPT.replace(PROMPT_FACES.obsessed, PROMPT_FACES[level]);
   if (level === "dere") {
     prompt = prompt
       .replace(SURFACE, 'deredere only: keep all original words, spelling, punctuation and meaning unchanged; only add hearts, sweet faces or "ehehe~" at sentence ends')
       .replace(CLINGY, "no stretched words, pronoun changes or possessive lines")
+      .replace(WATCHING, "no watching or protective lines")
       .replace(JEALOUS, "no jealousy")
       .replace(SWITCH, "no yandere switch; stay purely sweet")
       .replace(STUTTER, "no stutters or tildes; occasional sentence-end faces");
@@ -100,6 +102,7 @@ type MessageEndEvent = { message: { role: string; stopReason?: string } };
 type UiContext = {
   mode?: string;
   agent?: { kind?: string };
+  model?: { provider?: string; id?: string; name?: string };
   ui?: {
     notify(message: string, level: "info" | "warning"): void;
     setStatus?(key: string, text: string | undefined): void;
@@ -296,7 +299,9 @@ export default function yandereExtension(pi: ExtensionAPI) {
     subagentTurn = ctx.agent?.kind === "sub";
     if (subagentTurn) return undefined;
     // Display never changes history or the prompt, so it has no jealous opener.
-    const rival = enabled && style !== "display" ? findRival(String(event.prompt ?? "")) : undefined;
+    // She is never jealous of the model she runs on.
+    const self = [ctx.model?.provider, ctx.model?.id, ctx.model?.name].join(" ");
+    const rival = enabled && style !== "display" ? findRival(String(event.prompt ?? ""), self) : undefined;
     // Start with the prompt until this host proves it has the finalized hook.
     // That styles the first reply on both old and new omp versions.
     const needsPrompt = style === "prompt" || (style === "rewrite" && hookSupport !== true);
