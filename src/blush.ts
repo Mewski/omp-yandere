@@ -1,5 +1,5 @@
 import type { Theme, ThemeColor } from "@oh-my-pi/pi-coding-agent";
-import { FACE_TOKENS } from "./yandere.ts";
+import { FACE_TOKENS, tokenPattern } from "./yandere.ts";
 
 const TONES: readonly ThemeColor[] = ["accent", "mdLink", "mdCode", "mdListBullet", "mdHeading", "thinkingText"];
 const CRIMSON: ThemeColor = "mdListBullet";
@@ -8,11 +8,9 @@ const KNIFE = "🔪";
 
 const SYMBOLS = "♡♥❥❣✧☆★✿❀⋆";
 
-const KNOWN = [...FACE_TOKENS]
-  .filter((token) => !/^\p{Extended_Pictographic}+$/u.test(token) && ![...token].every((char) => SYMBOLS.includes(char)))
-  .sort((a, b) => b.length - a.length)
-  .map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-  .join("|");
+const KNOWN = tokenPattern(
+  [...FACE_TOKENS].filter((token) => !/^\p{Extended_Pictographic}+$/u.test(token) && ![...token].every((char) => SYMBOLS.includes(char))),
+);
 const FEATURES = "◕ᴗω▽◡•ᵔ˘≧≦˃˂・･︶﹏‿꒳ᗜﻌ∀ヮ´︿◉⊙ಠ︵□ᴥ＾｡⌒⩊ᵕ≖ˆ˶˵ᐛ⁀﹃ↀ✧♡♥ˍ✖‸";
 const ARMS = String.raw`٩۶ヽﾉノづっ✧♡♥☆⌒ヾᕕᕗ\\/`;
 const PAREN = String.raw`\((?=[^()\n]*[${FEATURES}])(?![^()\n]*(?:\p{L}\p{M}*){2})[^()\n\p{N}]{1,16}\)`;

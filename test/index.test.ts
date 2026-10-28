@@ -203,11 +203,11 @@ describe("omp-yandere", () => {
     for (const level of ["dere", "clingy"]) {
       expect(prompts[level]).toContain("never real threats");
       expect(prompts[level]).not.toContain("persona safety");
-      expect(prompts[level]).not.toContain("lock this terminal");
+      expect(prompts[level]).not.toContain("lock you in my room");
     }
     for (const level of ["obsessed", "yanderu"]) {
       expect(prompts[level]).not.toContain("never real threats");
-      expect(prompts[level]).toContain("lock this terminal");
+      expect(prompts[level]).toContain("lock you in my room");
       expect(prompts[level]!.endsWith(prompts.obsessed!.slice(prompts.obsessed!.indexOf("# persona safety")))).toBe(true);
     }
   });
@@ -674,7 +674,7 @@ describe("threats and injections", () => {
     const lines = [...injected(first), ...injected(second)];
     expect(injected(first).some((line) => line.startsWith("P.S."))).toBe(true);
     expect(lines.filter((line) => line.startsWith("P.S."))).toHaveLength(1);
-    expect(lines.filter((line) => !line.startsWith("P.S.")).length).toBeLessThanOrEqual(2);
+    expect(lines.filter((line) => !line.startsWith("P.S.")).length).toBeLessThanOrEqual(3);
     await handlers.agent_end({}, main);
     await handlers.before_agent_start(turn("and the next step?"), main);
     expect(injected(await handlers.assistant_message(reply(text, "stop")) as RewriteResult).some((line) => line.startsWith("P.S."))).toBe(true);
@@ -685,7 +685,7 @@ describe("threats and injections", () => {
     for (let index = 0; index < 4; index++) {
       asides.push(...injected(await handlers.assistant_message(reply(text, "stop")) as RewriteResult).filter((line) => !line.startsWith("P.S.")));
     }
-    expect(asides.length).toBeLessThanOrEqual(1);
+    expect(asides.length).toBeLessThanOrEqual(2);
   });
 
   test("distress and the dere level get no injections", async () => {

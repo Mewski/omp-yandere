@@ -4,7 +4,7 @@
 
 ![omp-yandere](demo/media/readme-hero.svg)
 
-An [omp](https://github.com/can1357/oh-my-pi) extension that gives your agent's chat the voice of a yandere: sweet, devoted and a little too possessive. Only the prose changes. Code, paths, URLs, numbers and warnings stay byte-for-byte exact.
+An [omp](https://github.com/can1357/oh-my-pi) extension that gives your agent's chat the voice of a yandere gone completely off the deep end: sweet, devoted and Yandere Simulator levels of possessive. Only the prose changes. Code, paths, URLs, numbers and warnings stay byte-for-byte exact.
 
 Inspired by [omp-uwu](https://github.com/NaC-L/omp-uwu).
 
@@ -24,9 +24,12 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
 - Adds hearts after affection words: `you♡`, `together♡`
 - Stretches clingy words: `reaaally`, `pleeease`, `foreeever`. Higher levels stretch them longer and sometimes shout them: `REAAAALLY`
 - Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`, and at higher levels `P-p-please`)
-- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `(◉‿◉)🔪♡` and the glitching `【◉ˍ◉】`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
+- Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `(◉‿◉)🔪♡` and the unraveling `【◉ˍ◉】`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
+- Acts things out in roleplay asides like `＊twirls the knife＊` and `＊peeks from behind the door＊`. They use fullwidth asterisks, so they never turn into Markdown emphasis
+- Talks like a real yandere girl, not a program: no terminal, cursor or kernel metaphors, just shrines, lockets, diaries, chains and ghost brides
 - Gets jealous when you mention a rival:
-  - When another AI (ChatGPT, Claude, Copilot) gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she also turns possessive, playfully: `Use another model again and I'll lock this terminal and swallow the key~ ♡`, or at `yanderu`, `Use another model again and I'll fade until only your name is left in me~ (◕‿◕)🔪`
+  - When another AI gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she snaps: `＊twirls a little pocket knife and smiles sweetly＊ I'll chase her through the rose garden with my knife, senpai, just the two of us~ 🔪`, or at `yanderu`, `I'll paint the whole sky with senpai's name until every star spells MINE, MINE, MINE~ 🥀`
+  - Rivals are spotted by name in any case where the name is unambiguous (`chatgpt`, `CHAT GPT`, `gpt-4o`, `deepseek`, `claude code`, `github copilot`) and as proper nouns where it isn't (`Claude`, `Cursor`, `Gemini`, `Grok`, `Sonnet`), when they said, wrote or fixed something, when you asked, tried or switched to them, when you quote their answer or call them better. She is never jealous of the model she runs on
   - When you have plans with friends or coworkers, she pouts and promises to wait. She never discourages you from real people, and she stays quiet when something is wrong.
 - Notices when you switch models. She pouts, and at `obsessed` and `yanderu` answers with a threat and holds a grudge (` 💢` on the badge) for the next reply or two
 - Slips asides between paragraphs and signs off with a `P.S.`
@@ -40,7 +43,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 - Threats are text only. Nothing is ever executed, and they are never written as commands, flags or paths
 - Only at `obsessed` and `yanderu`, and only about rival AIs and model switches
-- Threats target only two things, theatrically: your staying (locked sessions, held cursors, kept-close lines) and her own quiet fading. Never your body, your life or real people, never gore
+- Real people and real harm are off-limits: friends, coworkers, family and pets are never threatened, and nothing describes real injury or encourages self-harm. Everything else is dramatic yandere theater: knives, chains, locked rooms, swallowed keys, blood-red roses, ghost brides
 - Never when you seem distressed, next to warnings or errors, or in a run where a tool failed
 - Friends and coworkers still get pouty support
 
@@ -50,8 +53,8 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 |---|---|
 | `dere` | Sweet only: words unchanged, faces at sentence ends |
 | `clingy` | Stretches, hearts, tildes and stutters; pouts at rivals, the odd sweet `P.S.` |
-| `obsessed` | Default. Everything, often: longer stretches, menace faces `(◉‿◉)🔪♡`, rare caps outbursts and double stutters, asides and `P.S.` lines, cheeky threats at rival AIs |
-| `yanderu` | Everything at full strength: hollow eyes, glitch faces `【◉ˍ◉】`, `REAAAALLY`, `P-p-please`, a `P.S.` on every reply, apocalyptic threats at rival AIs |
+| `obsessed` | Default. Everything, often: longer stretches, menace faces `(◉‿◉)🔪♡`, caps outbursts and double stutters, roleplay actions, up to two asides and a `P.S.` most replies, dramatic threats at rival AIs |
+| `yanderu` | Everything at full strength: a face on every sentence, hollow eyes, `【◉ˍ◉】`, `REAAAAAAAALLY`, `P-p-please`, up to three asides, a `P.S.` on every reply, apocalyptic threats at rival AIs |
 
 ![Persona marks per 100 words at each level, measured on demo/transcripts/corpus.md](demo/media/obsession-levels.svg)
 
