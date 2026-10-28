@@ -39,8 +39,6 @@ CAPTURES = HERE / "captures"
 MEDIA = HERE / "media"
 HOME = Path.home()
 
-# Editorial chrome only; explicit colours in the saved ANSI cells stay untouched.
-# Yami-kawaii: bubblegum pink and crimson over bruised plum.
 BG = "#0d0609"
 PANEL_BG = "#150a10"
 PINK_BG = "#22101a"
@@ -57,9 +55,6 @@ PROMPT = "#ff9eb8"
 TERM_BG = PANEL_BG
 TERM_FG = FG
 
-# Only persona spans get the accent colour: kaomoji (parentheses holding a face
-# feature, with optional arms), hearts, emoji and the "Senpai~"/"ehehe~" calls.
-# Ordinary words that merely end in "~" keep the prose colour.
 FACE_FEATURES = "◕◉⊙ω･ᵔᵕ¬‿♡♥∀▽εˍ"
 PERSONA = re.compile(
     r"[^\s()]{0,2}\((?=[^()]*[" + FACE_FEATURES + r"])[^()\n]{1,16}\)[^\s()]{0,2}"
@@ -167,7 +162,7 @@ def wrap(toks: list[Tok], cols: int) -> list[list[Tok]]:
             lines.append([])
             width = 0
         if not lines[-1] and blank:
-            continue  # no leading spaces on wrapped lines
+            continue
         lines[-1].extend(group)
         width += size
     return lines
@@ -207,7 +202,6 @@ class Canvas:
             or font_path
         )
         self.heading = ImageFont.truetype(heading_path, 34)
-        # Glyph fallbacks in order: symbols, CJK/halfwidth kana, syllabics, then anything mono.
         self.fallbacks = [
             ImageFont.truetype(p, FONT_SIZE)
             for p in filter(
@@ -523,7 +517,6 @@ def render_ansi(c: Canvas, capture: dict, title: str, out: Path) -> None:
             fill=PROMPT,
             anchor="lt",
         )
-        # Real sequence labels also prevent GIF encoders merging identical TUI frames.
         d.text((width - MARGIN - PAD, HEADER_H + 20), f"FRAME {index + 1:03d}", font=c.small, fill=DIM, anchor="rt")
         d.line((MARGIN + PAD, HEADER_H + 44, width - MARGIN - PAD, HEADER_H + 44), fill=BORDER)
         y = HEADER_H + 60 + PAD
@@ -580,7 +573,6 @@ def render_ansi(c: Canvas, capture: dict, title: str, out: Path) -> None:
             pixel_heart(d, width - MARGIN - 14, height - 36, ACCENT)
         rgb.append(img)
 
-    # One palette across the entire sequence keeps captured colours stable.
     mosaic = Image.new("RGB", (width, height * len(rgb)))
     for i, frame in enumerate(rgb):
         mosaic.paste(frame, (0, height * i))

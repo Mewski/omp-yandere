@@ -30,7 +30,6 @@ describe("README artwork", () => {
     const measures = DERE_LEVELS.map((level) => measureLevel(level));
     expect(technicalSpans(CORPUS).length).toBeGreaterThan(5);
     for (const m of measures) expect(m.exact).toBe(true);
-    // dere only decorates sentence ends; every other mark needs a stronger level.
     expect(measures[0]!.marks).toEqual({ ...measures[0]!.marks, senpai: 0, hearts: 0, stretches: 0, tildes: 0, stutters: 0 });
     for (let index = 1; index < measures.length; index++) {
       expect(measures[index]!.perHundred).toBeGreaterThan(measures[index - 1]!.perHundred);
@@ -58,7 +57,6 @@ describe("README artwork", () => {
     expect(height(six) - height(four)).toBe(2 * 62);
     for (let index = 0; index < 6; index++) expect(six).toContain(`id="bar-level-${index}"`);
     expect([...six.matchAll(/class="mono pink"[^>]*>([^<]+)</g)].map((match) => match[1])).toEqual(["level-5"]);
-    // The footer stays inside the panel, below the last bar's caption.
     const lastCaption = Math.max(...[...six.matchAll(/class="mono muted" x="250" y="(\d+)"/g)].map((match) => Number(match[1])));
     const footer = Number(/y="(\d+)" font-size="14">Deterministic/.exec(six)![1]);
     expect(footer).toBeGreaterThan(lastCaption);

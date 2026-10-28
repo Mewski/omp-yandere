@@ -186,7 +186,6 @@ class RenderTests(unittest.TestCase):
 
     def test_identical_source_frames_are_not_merged_and_wide_content_is_not_cropped(self):
         c = render.Canvas(self.font_path)
-        # Width metadata can be smaller than the actual cell span; preserve the latter.
         line = "\x1b[48;2;25;35;45m" + "W" * 82 + "界!\x1b[0m"
         capture = {"width": 76, "frames": [{"ms": 35, "lines": [line]}, {"ms": 45, "lines": [line]}]}
         observed = []

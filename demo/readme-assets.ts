@@ -1,7 +1,3 @@
-// Rebuild the README artwork with: bun demo/readme-assets.ts
-// Writes demo/media/. The obsession chart is measured here, at generation time,
-// by running the real rewriter over demo/transcripts/corpus.md; nothing in it is
-// a reported or hand-typed number.
 import { readFileSync } from "node:fs";
 import { DERE_LEVELS, type DereLevel, SENPAI, YANDERE_FACES, yanderify } from "../src/yandere.ts";
 
@@ -25,16 +21,10 @@ export type LevelMeasure = { level: DereLevel; words: number; marks: Marks; perH
 const FACES_LONGEST_FIRST = [...YANDERE_FACES].sort((a, b) => b.length - a.length);
 const WORDS = /\S+/g;
 
-/** Inline code spans and fenced blocks of the input: these must survive byte-for-byte. */
 export function technicalSpans(text: string): string[] {
   return [...text.matchAll(/```[\s\S]*?```|`[^`\n]+`/g)].map((match) => match[0]);
 }
 
-/**
- * Rewrite the corpus at one level and classify every change. Added faces and
- * openers are counted and removed first; what remains has the same tokens as
- * the input, so each changed token is compared with its original.
- */
 export function measureLevel(level: DereLevel, corpus = CORPUS): LevelMeasure {
   const output = yanderify(corpus, { level });
   const marks: Marks = { faces: 0, senpai: 0, hearts: 0, stretches: 0, tildes: 0, stutters: 0 };
@@ -62,11 +52,6 @@ export function measureLevel(level: DereLevel, corpus = CORPUS): LevelMeasure {
   };
 }
 
-/**
- * The word marks one rewritten token carries. Stretches compare lowercased
- * forms, so caps outbursts (`REAAAALLY`) count as stretches; any number of
- * stutter beats (`P-please`, `P-p-please`) counts as one stutter.
- */
 export function tokenMarks(original: string, styled: string): Array<"hearts" | "stretches" | "tildes" | "stutters"> {
   const marks: Array<"hearts" | "stretches" | "tildes" | "stutters"> = [];
   if (styled.includes("♡") && !original.includes("♡")) marks.push("hearts");
@@ -119,7 +104,6 @@ ${body}
 `;
 }
 
-/** An original pixel girl peeking out from behind a brick wall, with a heart. */
 function peeker(): string {
   const px = (x: number, y: number, w: number, h: number, fill: string) =>
     `<rect x="${740 + x * 6}" y="${92 + y * 6}" width="${w * 6}" height="${h * 6}" fill="${fill}"/>`;
@@ -158,7 +142,6 @@ export function buildObsessionChart(measures = DERE_LEVELS.map((level) => measur
   const x = 250;
   const top = 150;
   const step = 62;
-  // The footer sits below the last bar's caption, so the panel grows with the ladder.
   const bottom = top + measures.length * step + 7;
   const width = 560;
   const max = Math.max(...measures.map((m) => m.perHundred), 1);

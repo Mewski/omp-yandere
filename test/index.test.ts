@@ -96,7 +96,6 @@ describe("omp-yandere", () => {
     const first = await handlers.before_agent_start(event(), { agent: { kind: "main" } }) as AgentStartResult;
     expect(first?.systemPrompt).toContain(YANDERE_PROMPT);
     await handlers.assistant_message({ message: { role: "assistant", content: [{ type: "text", text: "first reply" }] } });
-    // Once rewriting is proven, only a short note explains the styled history.
     expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
     expect(REWRITE_NOTE).not.toContain("senpai");
 
@@ -201,7 +200,6 @@ describe("omp-yandere", () => {
     expect(prompts.dere).not.toContain("┬┴┬┴┤･ω･)ﾉ");
     expect(prompts.clingy).toContain("clingy and possessive");
     expect(prompts.yanderu).not.toBe(prompts.obsessed);
-    // Threats, and the safety block that bounds them, start at obsessed.
     for (const level of ["dere", "clingy"]) {
       expect(prompts[level]).toContain("never real threats");
       expect(prompts[level]).not.toContain("persona safety");
@@ -411,7 +409,6 @@ describe("omp-yandere", () => {
     expect(await Bun.file(join(stateDir, "omp-yandere.json")).exists()).toBe(false);
     await command("status", ctx);
     await command("display", ctx);
-    // A subagent's session start leaves the main session's display untouched.
     await handlers.session_start({}, sub);
     expect(component.render()).toBe(yanderifyProse(text));
     expect(activeTheme).toBe(baseTheme);
@@ -483,7 +480,6 @@ describe("subagent instances", () => {
     await mainCommand("display", ctx);
     await mainHandlers.session_start({}, ctx);
     expect(component.render()).toBe(yanderifyProse(text));
-    // The subagent runs the same factory in the same process.
     handlers = {};
     installExtension();
     const subHandlers = handlers;
@@ -563,7 +559,6 @@ describe("model switches", () => {
     expect(await switched(gpt, fallback)).toBe(false);
     expect(await switched(gpt, fallback)).toBe(false);
     expect(await switched(claude)).toBe(false);
-    // Hosts without a readable branch report fallbacks through the event instead.
     expect(await handlers.retry_fallback_applied({ type: "retry_fallback_applied", from: "anthropic/claude-opus-4", to: "openai/gpt-5", role: "default" }, main)).toBeUndefined();
     expect(await switched(gpt)).toBe(false);
     expect(await switched(gpt)).toBe(false);
@@ -617,7 +612,6 @@ describe("model switches", () => {
     await handlers.before_agent_start(turn(), tui(gpt));
     expect(badges.at(-1)).toEndWith(" 💢");
     await handlers.agent_end({}, tui(gpt));
-    // At obsessed the grudge lasts one more run.
     await handlers.before_agent_start(turn(), tui(gpt));
     expect(badges.at(-1)).toEndWith(" 💢");
     await handlers.agent_end({}, tui(gpt));

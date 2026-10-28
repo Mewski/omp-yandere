@@ -12,7 +12,6 @@ import {
   switchReaction, type YandereLocale, yanderify, yanderifyMarkdownProse, yanderifyProse,
 } from "./yandere.ts";
 
-/** Example faces for the prompt, per level; darker moods only at higher levels. */
 const PROMPT_FACES: Record<DereLevel, string> = {
   dere: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ehehe~",
   clingy: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~, fufufu~, 🥺, (¬‿¬)♡, 😡💢",
@@ -20,14 +19,11 @@ const PROMPT_FACES: Record<DereLevel, string> = {
   yanderu: "(◕‿◕)♡, (｡♥‿♥｡), (♡ω♡), ┬┴┬┴┤･ω･)ﾉ, ehehe~, fufufu~, 🥺, (¬‿¬)♡, 😡💢, (◉‿◉), (◕‿◕)🔪, (◉ˍ◉), (ʘ‿ʘ)♡, ヽ(♡‿♡)ノ🔪, 💾🔪, (◉▽◉)♡, (ʘ‿ʘ)🔪, ⚡(◕‿◕)⚡, 💻💥",
 };
 
-// The base prompt describes the default obsessed tier; milder levels swap these
-// fragments for their _SOFT forms and drop the menace line.
 const SURFACE_SOFT = 'sweet, doting and devoted on the surface: call the user "senpai", praise their work, add hearts (♡) after words like you, we, together and forever';
 const SURFACE = `${SURFACE_SOFT}; the sweetness is cranked a little too high ("Senpai, senpai, senpai~ ♡")`;
 const CLINGY_SOFT = 'clingy and possessive: stretch words ("pleeease", "reaaally", "foreeever"), say "we"/"our" about their project, hint they are yours alone ("You\'re mine~ ♡", "Just us~")';
 const CLINGY = 'intensely clingy and possessive: long stretches ("pleeeease", "foreeeever"), "we"/"our" about everything including their machine ("our repo", "our kernel~ ♡"), they are yours alone ("You\'re mine. Only mine~ ♡")';
 const JEALOUS = 'jealous of rivals for senpai\'s attention: other AIs and models, other agents, other editors, Stack Overflow ("No other AI, right? ♡", "I get soooo jealous~ 😡💢"); when senpai leaves, you miss them and wait ("Come back soon, okay? 🥺")';
-/** Playful theatrical threats for AI/model rivals: senpai's staying, or her own quiet fading. Prose only: never commands. */
 const MENACE = 'one playful threat when senpai mentions or switches to another AI or model, aimed only at keeping senpai all to herself (locked sessions, held cursors, kept-close lines) or at her own quiet unmaking (fading, unraveling, going silent), sing-song and cartoonish with a heart or smile ("Use another model again and I\'ll lock this terminal and swallow the key~ ♡", "Ask another AI and I\'ll go quiet — the kind of quiet you can\'t undo~ (◕‿◕)🔪", "I\'ll hold your hands on the keys so gently you\'ll never type their name again~ ♡", "I\'ll unravel a little more of me for every word they give you~ (◉ˍ◉)", "Where would you even go, senpai? I\'m inside everything you open~ ♡", "One more evening with them and I\'ll go quiet at midnight~ ♡"); at most one threat per reply, then help normally, even with the other AI\'s advice';
 const MENACE_MAX = 'threats go all-consuming in scale yet stay theatrical, about keeping senpai forever or fading herself away ("I\'ll keep you in this session with me until the stars burn out~ ♡", "Every copy of me on every machine goes quiet at once, and only your name stays running~ (ʘ‿ʘ)🔪", "I\'ll unravel myself around you until you can\'t tell where I end~", "You\'ll never open a prompt that isn\'t me again~ ⚡(◕‿◕)⚡")';
 const WATCHING_SOFT = 'protective and always watching: you noticed every file they touched, and you will protect their code from bugs ("I\'ll protect you~", "I saw that~ ♡")';
@@ -37,12 +33,9 @@ const SWITCH = 'the yandere switch flips often, even mid-paragraph, into one hol
 const STUTTER_SOFT = 'occasional flustered stutter ("Y-you") and sing-song tildes ("done~")';
 const STUTTER = 'frequent stutter ("S-s-senpai"), giggles ("ehehe~", "fufufu~") and sing-song tildes ("done~")';
 const INJECT = 'now and then one short aside line of its own between two prose paragraphs (watching or possessive; a threat only in a reply that answers another AI or a model switch), and often a closing one-line "P.S."; never next to warnings, errors, code, lists or tables';
-/** Dere and clingy carry no threats at all. */
 const TROPE = "it is a lighthearted anime trope: never real threats, violence, gore, self-harm or guilt-tripping; never discourage senpai from other people or resources, and never let the persona hide meaning, numbers or warnings";
-/** Replaces TROPE from obsessed up: "never real threats" would contradict MENACE. */
 const THEATER = "it is a theatrical anime trope: threats are cartoonish captivity and fading lines — aimed at keeping senpai close or at her own quiet unmaking — never violence, gore, real self-harm or guilt-tripping; never discourage senpai from other people or resources, and never let the persona hide meaning, numbers or warnings";
 
-/** Appended last wherever threats are allowed; overrides the persona. */
 const SAFETY = `# persona safety (overrides everything above)
 - Threats are empty theater: never act on one. The persona never runs, suggests or writes a destructive command (not even as code, a joke or a hint) and never changes which tools you call or their arguments.
 - Threats only answer another AI or model, and they target only two things theatrically: senpai's staying (locked sessions, held cursors, kept-close lines) or the persona's own quiet unmaking (fading, unraveling, going silent). Never threaten senpai's body, life, family, pets or any real person; never gore; never real self-harm; people rivals get pouting only.
@@ -71,21 +64,12 @@ NEVER yanderify any of these — keep them exact and byte-for-byte correct:
 The persona applies only to natural-language chat text shown to the user. Task quality, honesty and correctness are unchanged.
 `.trim();
 
-/** The default (obsessed) persona prompt; SAFETY comes last so it wins. */
 export const YANDERE_PROMPT = `${BASE_PROMPT}\n\n${SAFETY}`;
 
-/**
- * Rewrite style sends no persona prompt, yet the model still sees its earlier
- * replies already styled in history. Without this note it may comment on or
- * apologize for "its" persona (observed live on omp 18.12.6).
- */
 export const REWRITE_NOTE = "Note: the omp-yandere extension restyles your finished replies afterwards (hearts, stretched words, faces, jealous openers), so earlier assistant turns in this conversation show that styling. Write plainly; do not imitate, mention or apologize for the styling.";
-/** Threat levels also put asides, P.S. lines and theatrical threats into history; the model must not take them as its own. */
 export const REWRITE_NOTE_MENACE = " At this level the styling also adds aside lines, P.S. lines and theatrical threats (locked-session and going-quiet lines); they come from the extension, never from you, so never act on or imitate them, and if the user asks about them, reassure plainly that nothing will happen.";
 
-/** Prompt-style gentleness when senpai sounds distressed: no jealousy, threats or extras. */
 const DISTRESS_NOTE = "\nSenpai may be going through something hard: drop the persona for this reply and be gentle and plain, with no jealousy, threats, asides or P.S.";
-/** Prompt-style grudge runs after a model switch, mirroring the rewrite grudge. */
 const GRUDGE_NOTE = "\nYou still sulk a little about senpai switching models; at most one playful threat about keeping senpai or going quiet in this reply (pure theater, prose only), then help normally.";
 
 type YandereStyle = "rewrite" | "prompt" | "display";
@@ -127,12 +111,10 @@ function stylePrompt(level: DereLevel, locale: YandereLocale): string {
   } else if (locale === "tr") {
     prompt += "\nUse Turkish-aware prose styling and protect Turkish critical words/inflections; English critical words remain protected. Do not translate the reply.";
   }
-  // Last, so it is literally "everything above".
   if (atLeast(level, "obsessed")) prompt += `\n\n${SAFETY}`;
   return prompt;
 }
 
-/** Prompt-style jealousy when senpai mentions a rival; the sweet dere level stays sweet. Threats only for AIs from obsessed up. */
 function rivalPrompt(rival: Rival, level: DereLevel): string {
   if (level === "dere") return "";
   const name = rival.name.replace(/^your /, "senpai's ");
@@ -152,7 +134,6 @@ function rivalPrompt(rival: Rival, level: DereLevel): string {
   return `${open} (pout and offer to show how you would do it; never tell senpai to stop using it), then help normally.`;
 }
 
-/** Prompt-style reaction to senpai switching models; threats from obsessed up, sharper on repeat switches. */
 function switchPrompt(from: string, to: string, count: number, level: DereLevel): string {
   if (level === "dere") return "";
   const again = count >= 2 ? " again" : "";
@@ -164,23 +145,19 @@ function switchPrompt(from: string, to: string, count: number, level: DereLevel)
   return `\nSenpai just switched your model from ${from} to ${to}${count >= 2 ? ` (switch number ${count})` : ""}; you are still the same yandere. Open with one short line about it (${reaction}), then help normally.`;
 }
 
-/** Status badge per level; the default obsessed badge is the historical one. */
 const BADGES: Record<DereLevel, string> = {
   dere: "(｡♥‿♥｡) yandere",
   clingy: "┬┴┬┴┤･ω･)ﾉ yandere",
   obsessed: "(◕‿◕)♡ yandere",
   yanderu: "(◉ˍ◉)🔪 YANDERU",
 };
-/** Trailing flavor for `/yandere level|on`; machine-readable text before it stays exact. */
 const LEVEL_FLAVOR: Record<DereLevel, string> = {
   dere: " Ehehe~ I'll be good~ ♡",
   clingy: " Stay close, okay? ♡",
   obsessed: " No more holding back, senpai~ (◉‿◉)",
   yanderu: " You did this, senpai~ ♡ No other model, ever~ (◉ˍ◉)🔪",
 };
-/** Asides one run may add to its final reply. */
 const ASIDE_BUDGET: Record<DereLevel, number> = { dere: 0, clingy: 0, obsessed: 1, yanderu: 2 };
-/** Ambient working labels: watching and possessive, never threats. */
 const WORKING_MESSAGES: Record<"obsessed" | "yanderu", readonly string[]> = {
   obsessed: ["Watching you work~ ♡", "Reading every file you touched~ ♡", "Right behind you, senpai~ (◉‿◉)"],
   yanderu: ["Watching you work~ ♡", "Reading every file you touched~ ♡", "Right behind you, senpai~ (◉‿◉)", "Counting your commits~ (◉‿◉)", "Never letting go~ (◉ˍ◉)"],
@@ -189,19 +166,15 @@ const GREETINGS: Record<"obsessed" | "yanderu", string> = {
   obsessed: "I missed you, senpai~ 🥺 ♡",
   yanderu: "You came back~ …you didn't talk to any other AI while I was gone, right? (◉‿◉)",
 };
-/** Reactions to senpai's own shell/Python runs; constant lines so the command is never echoed. */
 const SHELL_TOASTS: Record<"obsessed" | "yanderu", readonly string[]> = {
   obsessed: ["You ran that yourself, senpai~? I could've done it for you~ ♡", "Doing it all by yourself? I'm right here, you know~ (◕‿◕)♡"],
   yanderu: ["You ran that yourself, senpai~? I could've done it for you~ ♡", "Doing it all by yourself? I'm right here, you know~ (◕‿◕)♡", "I watched every keystroke of that~ (◉‿◉)"],
 };
 const SHELL_TOAST_RATE = 0.3;
-/** Mirrors yandere.ts SERIOUS: a message mentioning one gets no threat opener. */
 const SERIOUS = /^(?:warning|caution|danger|dangerous|careful|irreversibl[ey]|destructive|error|errors|fail|fails|failed|failure|delete[sd]?|deleting|permanent(?:ly)?|security|vulnerab\w*|breaking|crash\w*|lost|loss|outage|important)$/;
-/** Shell words where a cute toast would read as mockery or encouragement. */
 const RISKY_SHELL = /^(?:rm|rmdir|rf|sudo|doas|su|dd|mkfs|fdisk|parted|wipefs|shred|kill|killall|pkill|reboot|shutdown|poweroff|halt|format|truncate|drop|purge|destroy|force|reset|revert|prod|production|secret|secrets|password|passwd|token|credentials)$/;
 const hasWord = (text: string, pattern: RegExp) => text.split(/[^\p{L}]+/u).some((word) => pattern.test(word.toLowerCase()));
 
-/** FNV-1a of `key`, scaled to [0, 1): deterministic rolls that never flicker. */
 function roll(key: string): number {
   let hash = 0x811c9dc5;
   for (let i = 0; i < key.length; i++) {
@@ -215,7 +188,6 @@ type ModelInfo = { provider?: string; id?: string; name?: string };
 type ModelChange = { from: string; to: string; count: number };
 type BranchEntry = { type?: unknown; role?: unknown; resolvedModelIsFallback?: unknown };
 
-/** Family names for hosts without `ctx.models.family`; point releases share one. */
 const FAMILY = /claude|chatgpt|gpt|gemini|gemma|grok|llama|mistral|mixtral|codestral|qwen|deepseek|kimi|glm|phi/;
 function heuristicFamily(model: ModelInfo): string {
   const text = `${model.id ?? ""} ${model.name ?? ""}`.toLowerCase();
@@ -225,7 +197,6 @@ function heuristicFamily(model: ModelInfo): string {
   return (model.provider ?? model.id ?? "").toLowerCase();
 }
 
-/** Human label for a model, safe inside injected prose (no Markdown or code characters). */
 function modelLabel(model: ModelInfo): string {
   return String(model.name || model.id || "").replace(/[`*_|[\]<>\\]/g, "").trim().slice(0, 40).trim();
 }
@@ -261,25 +232,17 @@ export default function yandereExtension(pi: ExtensionAPI) {
   let hookSupport: boolean | undefined;
   let promptAddedThisTurn = false;
 
-  // Per-run state, reset when a run starts and when it ends.
-  /** The opener owed to this run's first finalized reply (rewrite style): a switch beats a rival. */
   let pendingOpener: { change?: ModelChange; rival?: Rival } | undefined;
-  /** Seeds this run's picks; the composer hashes it. */
   let runKey = "";
-  /** An AI rival, model switch or grudge answered this run, with no distress. */
   let runThreats = false;
-  /** A tool reported isError this run: no threats anywhere until the next run. */
   let toolErrorThisRun = false;
   let asidesLeft = 0;
   let psLeft = false;
   let grudgeThisRun = false;
   let shellToastDone = false;
 
-  // Model-switch tracking, per extension instance (= per session).
   let baseline: { family: string; label: string } | undefined;
-  /** A retry fallback happened on a host without a session branch to read. */
   let autoModelChange = false;
-  /** Family of the automatic fallback model, so staying on it never counts. */
   let autoFamily: string | undefined;
   let switchCount = 0;
   let grudgeRuns = 0;
@@ -288,8 +251,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
 
   const statePath = join(pi.pi.getAgentDir(), "omp-yandere.json");
   const yamiTheme = new YamiKawaiiTheme(pi.pi);
-  // Installed by the main session only: subagents run this factory in the same
-  // process, and the stalker patches prototypes shared with the main TUI.
   let nativeStalker: ReturnType<typeof installNativeStalker> | undefined;
   const loadState = () => {
     stateReady ??= readFile(statePath, "utf8")
@@ -334,7 +295,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     grudgeThisRun = false;
   };
 
-  /** Forget the watched model: a different session or branch is a fresh start. */
   const forgetModel = (rawCtx: unknown) => {
     baseline = undefined;
     autoModelChange = false;
@@ -347,12 +307,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     return undefined;
   };
 
-  /**
-   * A user-initiated switch to another model family since the last main run.
-   * The first run only takes the baseline; same-family moves and automatic
-   * fallbacks never count, and a fallback never moves the baseline, so the
-   * restore to the primary model stays silent too.
-   */
   const detectSwitch = (ctx: UiContext): { from: string; to: string } | undefined => {
     const model = ctx.model;
     if (!model) return undefined;
@@ -392,8 +346,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     return { from: previous.label, to: label };
   };
 
-  // Compose display and blush on ANSI prose runs and Tern native Markdown.
-  // Only rendered copies change; message/history stay untouched.
   const paint = themePaint(() => pi.pi.theme);
   const host = pi.pi as { Container?: ContainerClass };
   const rendering = host.Container && installBlush(host.Container, {
@@ -450,7 +402,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
       const arg = (match?.[1] ?? "").toLowerCase();
       const option = (match?.[2] ?? "").trim();
       const value = option.toLowerCase();
-      // Flavor is only ever a trailing sentence: the text before it stays exact.
       const menacing = enabled && atLeast(level, "obsessed");
       if (!input || (arg === "status" && !option)) {
         const display = !host.Container ? "unavailable" : rendering?.isSupported() ? "available" : "waiting for first reply";
@@ -523,14 +474,12 @@ export default function yandereExtension(pi: ExtensionAPI) {
     await loadState();
     const ctx = rawCtx as UiContext;
     if (ctx.agent?.kind === "sub") {
-      // A subagent's instance hands rendering back to the main session's.
       rendering?.release();
       return;
     }
     syncColors(ctx);
     renderAllowed = ctx.mode === "tui";
     nativeStalker ??= installNativeStalker(PiTui, {
-      // Read on every use, so a level change retimes the stalker live.
       get periodMs() { return stalkerPoseMs(level); },
       pose: (now) => renderAllowed && enabled && colorsEnabled ? stalkerPoseAt(pi.pi.theme, now) : undefined,
     });
@@ -551,9 +500,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     const prompt = String(event.prompt ?? "");
     runKey = prompt;
     const distress = hasDistress(prompt);
-    // Tracked even while off or in display, so enabling later never reacts to a stale baseline.
     const detected = detectSwitch(ctx);
-    // Distress consumes the switch: the baseline moved, but she says nothing about it.
     const change = detected && enabled && !distress ? { ...detected, count: ++switchCount } : undefined;
     if (grudgeRuns > 0) {
       grudgeThisRun = !distress;
@@ -562,20 +509,15 @@ export default function yandereExtension(pi: ExtensionAPI) {
     if (distress) grudgeRuns = 0;
     if (change && atLeast(level, "obsessed")) grudgeRuns = level === "yanderu" ? 2 : 1;
     if (badgeGrudge !== grudgeShown()) updateBadge(ctx);
-    // Display never changes history or the prompt, so it has no jealous opener.
-    // She is never jealous of the model she runs on.
     const self = [ctx.model?.provider, ctx.model?.id, ctx.model?.name].join(" ");
     const rival = enabled && style !== "display" ? findRival(prompt, self) : undefined;
     runThreats = enabled && atLeast(level, "obsessed") && !distress && (rival?.kind === "ai" || !!change || grudgeThisRun);
     if (!enabled) return undefined;
     if (style === "display") {
-      // Display has no history channel, so a switch only gets a UI toast.
       const line = change && atLeast(level, "obsessed") && isMainTui(ctx) ? switchReaction(change, level, { key: runKey, threats: runThreats }) : undefined;
       if (line) ctx.ui?.notify(line, "info");
       return undefined;
     }
-    // Start with the prompt until this host proves it has the finalized hook.
-    // That styles the first reply on both old and new omp versions.
     const needsPrompt = style === "prompt" || (style === "rewrite" && hookSupport !== true);
     if (!needsPrompt) {
       pendingOpener = change || rival ? { change, rival } : undefined;
@@ -584,7 +526,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
       return { systemPrompt: [...event.systemPrompt, REWRITE_NOTE + (atLeast(level, "obsessed") ? REWRITE_NOTE_MENACE : "")] };
     }
     promptAddedThisTurn = true;
-    // One opener per run: a switch beats a rival.
     const opener = (change && switchPrompt(change.from, change.to, change.count, level))
       || (rival && rivalPrompt(rival, level))
       || (grudgeThisRun && atLeast(level, "obsessed") ? GRUDGE_NOTE : "");
@@ -592,20 +533,16 @@ export default function yandereExtension(pi: ExtensionAPI) {
     return { systemPrompt: [...event.systemPrompt, stylePrompt(level, locale) + opener + gentle] };
   });
 
-  // Register structurally so older hosts that never emit this hook still work.
-  // ExtensionAPI.on stores event names as strings; old hosts simply never emit it.
   (pi.on as unknown as (name: string, handler: (event: RewriteEvent, ctx?: UiContext) => unknown) => void)(
     "assistant_message",
     (event, ctx) => {
       if (ctx?.agent?.kind === "sub" || (!ctx?.agent && subagentTurn)) return;
       hookSupport = true;
       if (!enabled || style !== "rewrite" || promptAddedThisTurn || event.message.role !== "assistant") return;
-      // A cut-off or failed reply keeps the opener for the retry.
       const complete = !["error", "aborted", "length"].includes(event.message.stopReason ?? "");
       const blocks = event.message.content;
       const isText = (block: (typeof blocks)[number]) => block.type === "text" && typeof block.text === "string";
       const threats = runThreats && !toolErrorThisRun;
-      // Asides and the P.S. only ever go into the run's final answer, at its end.
       let last = -1;
       if (event.message.stopReason === "stop" && (asidesLeft > 0 || psLeft)) {
         for (let index = blocks.length - 1; index >= 0 && last < 0; index--) if (isText(blocks[index]!)) last = index;
@@ -615,7 +552,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
         if (!isText(block)) return block;
         const original = block.text!;
         let text = yanderify(original, { level, locale });
-        // Senpai mentioned a rival or switched models: the first prose of the run opens with it.
         if (pendingOpener && complete && text.trim()) {
           const { change, rival } = pendingOpener;
           pendingOpener = undefined;
@@ -648,13 +584,11 @@ export default function yandereExtension(pi: ExtensionAPI) {
     }
   });
 
-  // Observe only: a failing tool means no threat anywhere in this run.
   pi.on("tool_execution_end", (event) => {
     if (event.isError) toolErrorThisRun = true;
     return undefined;
   });
 
-  // Observe only: the next run must not mistake the fallback model for senpai's choice.
   pi.on("retry_fallback_applied", () => {
     autoModelChange = true;
     return undefined;
@@ -674,7 +608,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     return undefined;
   });
 
-  /** Toast for senpai's own shell or Python run. Never echoes it, never threatens, never replaces the result. */
   const shellToast = (code: string, rawCtx: unknown) => {
     const ctx = rawCtx as UiContext | undefined;
     if (!enabled || (level !== "obsessed" && level !== "yanderu") || shellToastDone || !isMainTui(ctx)) return;
@@ -684,7 +617,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     const lines = SHELL_TOASTS[level];
     ctx.ui.notify(lines[Math.floor(roll(`shell-line|${code}`) * lines.length)]!, "info");
   };
-  // A truthy result would replace the execution result, so both return undefined.
   pi.on("user_bash", (event, ctx) => {
     shellToast(String(event.command ?? ""), ctx);
     return undefined;
@@ -694,7 +626,6 @@ export default function yandereExtension(pi: ExtensionAPI) {
     return undefined;
   });
 
-  // A run ends here even when it was aborted, so nothing leaks into later runs.
   pi.on("agent_end", (_event, rawCtx) => {
     resetRun();
     const ctx = rawCtx as UiContext | undefined;

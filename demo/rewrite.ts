@@ -1,7 +1,3 @@
-// Derive transcripts/rewrite.txt from the real plain.txt reply by driving the
-// extension's own hooks, exactly as omp does in the default rewrite style once
-// the host has shown it supports the awaited `assistant_message` hook. No model call.
-// Usage: bun demo/rewrite.ts [level] [model]   (defaults: yanderu, the recorded model)
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -32,9 +28,7 @@ yandereExtension({
 const main = { agent: { kind: "main" } };
 const assistant = (text: string) => ({ message: { role: "assistant", content: [{ type: "text", text }] } });
 try {
-  // The same command a user types; it also persists to the throwaway agent dir.
   await command!(`level ${level}`, { mode: "print", ui: { notify() {} } });
-  // An earlier finalized reply proves the hook, as in any session after turn one.
   await handlers.assistant_message!(assistant("warm-up"), main);
   await handlers.before_agent_start!({ prompt, systemPrompt: [] }, main);
   const result = await handlers.assistant_message!(assistant(plain), main) as Rewrite;

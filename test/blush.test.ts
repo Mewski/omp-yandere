@@ -11,14 +11,11 @@ import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES_BY_LEVEL, stalkerP
 import { blush, blushMarks, installBlush, type BlushInstallation, type Paint } from "../src/blush.ts";
 import { DERE_LEVELS, type DereLevel, yanderify, yanderifyMarkdownProse, yanderifyProse } from "../src/yandere.ts";
 
-/** The strongest level: stretched words and hearts fire on nearly every candidate. */
 const YANDERU = { level: "yanderu" } as const;
 
-/** Visible paint so assertions can see exactly what was colored. */
 const bracket: Paint = (tone, text) => `[${tone}:${text}]`;
 const painted = (text: string) => [...blush(text, bracket).matchAll(/\[\w+:([^\]]*)\]/g)].map((m) => m[1]);
 
-/** A distinctive SGR color no omp theme uses, to spot blushes in real renders. */
 const MARK = "\x1b[38;2;1;2;3m";
 const ansiPaint: Paint = (_tone, text) => `${MARK}${text}\x1b[39m`;
 
@@ -74,7 +71,6 @@ describe("blush", () => {
       ["(◉‿◉)", "mdListBullet"], ["(⊙ˍ⊙)", "mdListBullet"], ["(•‿•)", "mdListBullet"], ["【◉ˍ◉】", "mdListBullet"],
     ]);
     expect(new Set(tones.filter(([text]) => text === "♡").map(([, tone]) => tone)).size).toBeGreaterThan(1);
-    // One literal shares one native style: a face that ever holds the knife stays crimson.
     const marks = blushMarks("(•‿•) hi (•‿•)🔪 and (◉‿◉)");
     expect(marks.find(({ t }) => t === "(•‿•)")?.s).toBe("mdListBullet");
     expect(marks.find(({ t }) => t === "(◉‿◉)")?.s).toBe("mdListBullet");
@@ -102,14 +98,12 @@ describe("blush", () => {
         const frames = stalker.getSpinnerFrames("activity");
         expect({ level, widths: [...new Set(frames.map(visibleWidth))] }).toEqual({ level, widths: [11] });
         expect(new Set(frames).size).toBeGreaterThan(1);
-        // She ducks behind the wall: the visible face grows and shrinks inside a fixed-width lane.
         expect(new Set(frames.map((frame) => frame.trimEnd().length)).size).toBeGreaterThan(1);
         expect(frames.every((frame) => !/[\r\n\x1b]/.test(frame))).toBe(true);
         expect(frames).not.toEqual(base.getSpinnerFrames("activity"));
         expect(stalker.getSpinnerFrames("status")).toEqual(base.getSpinnerFrames("status"));
         expect(base.getSpinnerFrames("activity")).toEqual(originalActivity);
         expect(frames).toEqual(expectedActivity);
-        // Every level's frames are recognized, at that level's pace.
         const poses = STALKER_POSES_BY_LEVEL[level];
         expect(stalkerPoseAt(stalker, 0)).toBe(poses[0]);
         expect(stalkerPoseAt(stalker, stalkerPoseMs(level))).toBe(poses[1]);
@@ -193,7 +187,6 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
   test("finds the component through its Container base, then stops watching", () => {
     expect(Container.prototype.addChild).not.toBe(originalAddChild);
     active = true;
-    // A constructor-time message is painted: discovery happens before its first update.
     const component = new AssistantMessageComponent(message("Senpai~ ehehe~"));
     expect(Container.prototype.addChild).toBe(originalAddChild);
     expect(component.render(80).join("\n")).toContain(MARK);
@@ -206,7 +199,6 @@ describe("installBlush on omp's AssistantMessageComponent", () => {
     const component = new AssistantMessageComponent();
     component.updateContent(message(body));
     const rows = render(component);
-    // Senpai~, ehehe~ and the kaomoji in prose: three painted spans, nothing from code.
     expect(rows.split(MARK).length - 1).toBe(3);
   });
 
@@ -625,8 +617,6 @@ test("inherited native describe is not patched or reported as installed support"
   }
 });
 
-// Run against the user's installed host as well as the pinned development API.
-// Other install layouts can opt in by pointing this at their pi-tui package.
 const hostTui = process.env.OMP_YANDERE_HOST_TUI ?? join(homedir(), ".bun", "install", "global", "node_modules", "@oh-my-pi", "pi-tui");
 test.skipIf(!existsSync(join(hostTui, "src", "chat", "assistant-message.ts")))("installed omp ANSI render wraps display prose and preserves code/history", async () => {
   const host = await import(pathToFileURL(join(hostTui, "src", "index.ts")).href);

@@ -2,7 +2,6 @@ import type { ExtensionUiComponent, Theme } from "@oh-my-pi/pi-coding-agent";
 import { Key, matchesKey, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@oh-my-pi/pi-tui";
 import { atLeast, DERE_LEVELS, type DereLevel, levelRank, type YandereLocale, yanderify, yanderifyProse } from "./yandere.ts";
 
-/** The title's face darkens with the draft level. */
 const TITLE_FACES: Record<DereLevel, string> = { dere: "♡", clingy: "♡", obsessed: "(◉‿◉)🔪", yanderu: "(◉ˍ◉)🔪" };
 
 export type YandereSettings = {
@@ -17,7 +16,6 @@ export const DEFAULT_SETTINGS: Readonly<YandereSettings> = {
   enabled: true, style: "rewrite", level: "obsessed", locale: "auto", colorsEnabled: false,
 };
 
-/** What this session has observed; not a support guarantee. */
 export type Capability = "waiting for first reply" | "available" | "unavailable";
 
 export type YandereStatus = YandereSettings & {
@@ -88,8 +86,6 @@ export function createStatusCard(
         const key = contentWidth >= 34 ? label.padEnd(16) : `${label}: `;
         row(`${theme.fg("text", key)}${value}`);
       };
-      // Stronger levels write longer text; reserve the tallest level's rows so
-      // cycling the level never makes the card jump.
       const levelRow = (textFor: (level: DereLevel) => string) => {
         const reserved = Math.max(...levels.map((level) => wrapTextWithAnsi(textFor(level), contentWidth).length));
         const text = textFor(draft.level);
@@ -108,8 +104,6 @@ export function createStatusCard(
       if (tab === "controls") {
         control(0, "Mode", `${chip(draft.enabled ? "● ON" : "ON", draft.enabled)} ${chip(draft.enabled ? "OFF" : "OFF ●", !draft.enabled)}`);
         control(1, "Style", presets(styles, draft.style));
-        // Three hearts fill as deredere turns yanderu, bleeding crimson at the
-        // top; with the four chips this fits the 64-column content width exactly.
         const filled = levelRank(draft.level);
         const hearts = theme.fg(atLeast(draft.level, "yanderu") ? "mdListBullet" : "accent", "♥".repeat(filled));
         control(2, "Obsession", `${presets(levels, draft.level)} ${hearts}${theme.fg("dim", "♡".repeat(levels.length - 1 - filled))}`);

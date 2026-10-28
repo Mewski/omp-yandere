@@ -20,7 +20,6 @@ const TURKISH_CRITICAL_WORDS = [
   "silmesin", "silmemelisin", "silinmesin", "silemezsin",
   "hayır", "asla", "hiç", "hiçbir", "sakın",
 ];
-/** Longest first, so "ehehe~ ♡" is removed before the "♡" inside it. */
 const FACES_LONGEST_FIRST = [...YANDERE_FACES].sort((a, b) => b.length - a.length);
 const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).length;
 const countFaces = (text: string) => {
@@ -32,7 +31,6 @@ const countFaces = (text: string) => {
   }
   return total;
 };
-/** Remove sentence-end faces and "Senpai~" openers the rewriter added. */
 const undecorate = (text: string) =>
   FACES_LONGEST_FIRST.reduce((rest, face) => rest.replaceAll(` ${face}`, ""), text).replaceAll(`${SENPAI} `, "");
 
@@ -178,7 +176,6 @@ describe("yandere persona transforms", () => {
     const paragraphs = Array.from({ length: 80 }, (_, index) => `Step ${index} is done. It works now. The tests pass. We are good.`).join("\n\n");
     for (const level of DERE_LEVELS) {
       for (const paragraph of yanderify(paragraphs, { level }).split("\n\n")) {
-        // "Ehehe~ ♡" also contains "Ehehe~": count the longest phrase only.
         const found = phrases.filter((phrase) => paragraph.includes(` ${phrase}`) &&
           !phrases.some((longer) => longer !== phrase && longer.includes(phrase) && paragraph.includes(` ${longer}`)));
         expect({ level, paragraph, found: found.length <= 1 }).toEqual({ level, paragraph, found: true });
@@ -219,7 +216,6 @@ describe("dere levels", () => {
 
   test("higher levels stretch, heart, tilde, stutter, open and decorate more", () => {
     const measures: Array<[string, (level: DereLevel) => number]> = [
-      // Outbursts upper-case a stretch: "REAAAAALLY".
       ["stretch", (level) => count(yanderifyProse("really ".repeat(300), { level }), /rea{3,}lly/gi)],
       ["heart", (level) => count(yanderifyProse("you ".repeat(300), { level }), /you♡/g)],
       ["tilde", (level) => count(yanderify("Done. ".repeat(300), { level }), /Done~/gi)],
@@ -229,7 +225,6 @@ describe("dere levels", () => {
     ];
     for (const [name, measure] of measures) {
       const counts = LEVELS.map(measure);
-      // The top level may saturate a knob.
       expect({ name, ok: counts[0]! > 0 && counts[1]! > counts[0]! && counts[2]! > counts[1]! && counts[2]! <= 300 })
         .toEqual({ name, ok: true });
     }
@@ -322,8 +317,6 @@ describe("quoted spans and contractions", () => {
 });
 
 describe("Turkish critical words", () => {
-  // Each word opens its own sentence, so unguarded words would be stuttered
-  // and lose their period to a tilde.
   const sentences = (words: string[], language = "tr") =>
     words.map((word) => `${word[0]!.toLocaleUpperCase(language)}${word.slice(1)}.`).join(" ");
 
@@ -342,8 +335,6 @@ describe("Turkish critical words", () => {
         word[0]!.toLocaleUpperCase("tr") + word.slice(1),
         word.normalize("NFD"),
       ]);
-      // Uppercase prefixes followed by lowercase avoid the acronym/camelCase
-      // guards, so dotted İ must actually be folded with Turkish rules.
       words.push("Sİl", "Sİlin", "Sİlme", "Hİç", "UYArı", "DEĞİl", "YOk");
       const source = sentences(words);
       expect(yanderifyProse(source, { level: "yanderu", locale })).toBe(source);
@@ -506,10 +497,8 @@ describe("rival jealousy", () => {
     expect(jealousOpener(ai, "clingy")).toContain("ChatGPT");
     expect(jealousOpener(person, "clingy")).toContain("right here");
     expect(jealousOpener(person, "obsessed")).toContain("( ◕ ˍ ◕ )");
-    // A person rival starts a sentence, so it is capitalized: "Ehh? Your friends?"
     expect(jealousOpener(person, "obsessed")).toContain("Your friends");
     expect(jealousOpener(person, "obsessed")).not.toContain("your friends");
-    // Threat openers are pinned in "injections" below; the pouting lines never push anyone away.
     for (const level of LEVELS) {
       for (const rival of [ai, person]) {
         for (const key of ["", "a", "b", "c", "d"]) {
@@ -517,7 +506,6 @@ describe("rival jealousy", () => {
           expect(line.toLowerCase()).toContain(rival.name.toLowerCase());
           expect(jealousOpener(rival, level, { key, threats: false })).toBe(line);
           expect(line).not.toMatch(/only one|don't need|only need|mine|waiting until|forgive|not mad/);
-          // Ellipses: " …word" pauses before a thought, "word…" trails off; never doubled.
           expect(line).not.toMatch(/……| … |\p{L}…\p{L}/u);
         }
       }
@@ -555,7 +543,6 @@ describe("injections", () => {
         }
       }
     }
-    // The key varies the pick; no key keeps one line per rival.
     expect(new Set(KEYS.map((key) => jealousOpener(ai, "yanderu", { key }))).size).toBeGreaterThan(3);
     expect(jealousOpener(ai, "yanderu")).toBe(jealousOpener(ai, "yanderu", { key: "" })!);
   });
@@ -575,7 +562,6 @@ describe("injections", () => {
           expect(line).toMatch(/GPT-5|Claude Opus/);
           expect(isInjectedLine(line!)).toBe(true);
           expect({ level, count, key, threat: threats.has(line!) }).toEqual({ level, count, key, threat: atLeast(level, "obsessed") });
-          // A repeat switch escalates to the apocalyptic tier.
           if (atLeast(level, "obsessed")) expect(tierB.has(line!)).toBe(count >= 2 || level === "yanderu");
           expect(threats.has(switchReaction(change, level, { key, threats: false })!)).toBe(false);
         }
@@ -676,9 +662,7 @@ describe("injections", () => {
         const asides = blocks.flatMap((block, index) => THREAT_LINES.has(block) && !block.startsWith("P.S. ") ? [index] : []);
         expect(asides.length).toBe(result.asides);
         for (let index = 1; index < asides.length; index++) expect(asides[index]! - asides[index - 1]!).toBeGreaterThanOrEqual(3);
-        // Removing the injections gives back the reply untouched.
         expect(blocks.filter((block) => !THREAT_LINES.has(block)).join("\n\n")).toBe(text);
-        // A kind already present is never added twice.
         const again = injectReply(result.text, plan("yanderu", `${key}!`, true, budget));
         expect({ asides: result.asides > 0 && again.asides > 0, ps: result.ps && again.ps }).toEqual({ asides: false, ps: false });
         used += result.asides;
@@ -799,7 +783,6 @@ describe("review regressions", () => {
       const once = yanderify(text, { level: "yanderu", locale });
       expect(yanderify(once, { level: "yanderu", locale })).toBe(once);
       expect(once).not.toMatch(/[\ud800-\udbff](?![\udc00-\udfff])/);
-      // A double stutter trips twice at most: "İ-i̇-i̇zmir", never a third time.
       expect(once).not.toMatch(/İ-(?:i̇-){2}/);
     }
   });
@@ -809,7 +792,6 @@ describe("review regressions", () => {
     const result = yanderify(text, { level: "yanderu" });
     expect(undecorate(result)).toBe(result);
     expect(result).not.toContain("~");
-    // Bad news keeps the rest of its paragraph plain, too.
     for (let pad = 0; pad < 60; pad++) {
       const after = yanderify(`${"Intro.\n\n".repeat(pad)}The deploy failed with an error. Roll back now. It is fine.`, { level: "yanderu" });
       expect(after.split("\n\n").at(-1)).toBe("The deploy failed with an error. Roll back now. It is fine.");

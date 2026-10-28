@@ -1,13 +1,3 @@
-// Capture ANSI frames for render.py from omp's real TUI components, drawn with
-// the yami-kawaii palette over omp's dark-sunset theme and with blush installed:
-// what a user with `/yandere colors on` sees. No model calls, fully deterministic.
-// Writes demo/captures/:
-//   chat.json      prompt.txt typed into a user bubble, plain.txt streaming into
-//                  an assistant message, then the finalized rewrite.txt swapped
-//                  in, which is how rewrite style refreshes after streaming ends
-//   dashboard.json the `/yandere status` card while a scripted key sequence edits it
-//   stalker.json   the real status-line brand segment over two peeking cycles
-// Usage: COLORTERM=truecolor bun demo/capture.ts
 import { getThemeByName, setThemeInstance, Theme } from "@oh-my-pi/pi-coding-agent";
 import { Container } from "@oh-my-pi/pi-tui";
 import { AssistantMessageComponent } from "@oh-my-pi/pi-tui/chat/assistant-message";
@@ -35,7 +25,6 @@ const rendering = installBlush(Container, {
   native: (text) => ({ text, marks: blushMarks(text) }),
 });
 
-// --- chat: type the prompt, stream the plain reply, then the finalized rewrite ------
 const CHAT_WIDTH = 76;
 const [prompt, plain, rewrite] = await Promise.all(["prompt.txt", "plain.txt", "rewrite.txt"].map(async (name) =>
   (await Bun.file(`${transcripts}/${name}`).text()).replace(/\r\n/g, "\n").trim()));
@@ -58,7 +47,6 @@ component.updateContent(message(rewrite));
 chat.push({ ms: 6000, lines: [...sent, "", ...component.render(CHAT_WIDTH)] });
 await Bun.write(`${captures}/chat.json`, `${JSON.stringify({ theme: THEME, width: CHAT_WIDTH, frames: chat }, null, 1)}\n`);
 
-// --- dashboard ---------------------------------------------------------------------
 const DASH_WIDTH = 68;
 const KEYS = { down: "\x1b[B", right: "\x1b[C", left: "\x1b[D", tab: "\t" } as const;
 const status: YandereStatus = {
@@ -67,7 +55,6 @@ const status: YandereStatus = {
   nativeDisplay: rendering.isNativeSupported() ? "available" : "unavailable", promptFallback: false,
 };
 const card = createStatusCard(status, theme, () => {}, () => {});
-// Each step: key to press (or null for the opening frame) and how long to hold the result.
 const script: [keyof typeof KEYS | null, number][] = [
   [null, 1600],
   ["down", 500], ["right", 1100], ["right", 1100], ["left", 700], ["left", 900],
@@ -82,11 +69,9 @@ const dashboard: Frame[] = script.map(([key, ms]) => {
 });
 await Bun.write(`${captures}/dashboard.json`, `${JSON.stringify({ theme: THEME, width: DASH_WIDTH, frames: dashboard }, null, 1)}\n`);
 
-// --- stalker: sample the host's actual time-derived brand spinner -------------------
 const stalker: Frame[] = [];
 const cycleTicks = theme.getSpinnerFrames("activity").length;
 for (let tick = 0; tick < cycleTicks * 2; tick += 3) {
-  // The pi segment reads only these fields; no session/model is needed.
   const context = {
     now: new Date(tick * 80),
     turnElapsedMs: tick * 80,

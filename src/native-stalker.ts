@@ -7,7 +7,6 @@ type Host = {
   TUI?: { prototype: TUI };
   isNativeRendering?: () => boolean;
 };
-/** `periodMs` is read on every use, so callers may pass a getter that follows the level. */
 type Control = { readonly periodMs: number; pose(now: number): string | undefined };
 type Clock = { now(): number; schedule(callback: () => void, delay: number): () => void };
 const clock: Clock = {
@@ -19,12 +18,6 @@ const clock: Clock = {
   },
 };
 
-// She follows senpai everywhere: the peeking face creeps along the pane walls
-// while its heart beats. Tern owns the animation clock and pane geometry. A
-// non-modal, hoisted overlay leaves the working label and keyboard/pointer
-// targets untouched. Timings follow the pose period: the heart alternates
-// poses 0 and 1 every period, and a faster stalker also creeps faster (a lap
-// takes 250 periods: 60s at 240ms, 20s at 80ms).
 const roamStyles = (periodMs: number) => `
 [data-role="yandere.stalker.roam"] {
   position: absolute; inset: 0; width: 100% !important; height: 100% !important;
@@ -56,7 +49,6 @@ const roamStyles = (periodMs: number) => `
   0%, 100% { opacity: 1; transform: translateY(0); }
   50% { opacity: 0; transform: translateY(-1px); }
 }
-/* Creep along the walls and linger at each corner, watching. */
 @keyframes yandere-stalker-creep {
   0%, 8% { left: 0; top: calc(100% - 3em); }
   25%, 33% { left: calc(100% - 7em); top: calc(100% - 3em); }
@@ -71,7 +63,6 @@ const roamStyles = (periodMs: number) => `
 const emitStyles = (owner: TUI, css: string) =>
   owner.terminal.write(`\x1b_tsp;s;${JSON.stringify({ name: "omp-yandere-stalker", css })}\x1b\\`);
 
-/** Creep around a Tern pane with styles; older terminals retain the peeking spinner. */
 export function installNativeStalker(host: Host, control: Control, animationClock: Clock = clock) {
   const loader = host.Loader?.prototype;
   const tui = host.TUI?.prototype;
@@ -82,7 +73,6 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
         typeof Object.getOwnPropertyDescriptor(loader, key)?.value === "function") ||
       typeof Object.getOwnPropertyDescriptor(tui, "requestComponentRender")?.value !== "function") return unsupported;
 
-  // Reloads retain weak owner/lifecycle links, but never inherit animation timers.
   const previous = (loader as unknown as Record<symbol, {
     dispose(): void; owners: WeakMap<Loader, TUI>; stopped: WeakSet<Loader>;
   }>)[REGISTRY];
@@ -95,7 +85,6 @@ export function installNativeStalker(host: Host, control: Control, animationCloc
   const stopped = previous?.stopped ?? new WeakSet<Loader>();
   const timers = new Map<Loader, () => void>();
   const cache = new WeakMap<NativeNode, { pose: string; step: string | undefined; roaming: boolean; still: boolean; node: NativeNode }>();
-  // The period each owner's roam styles were last emitted for.
   const styled = new Map<TUI, number>();
   let disposed = false;
 
