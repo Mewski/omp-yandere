@@ -84,7 +84,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 ## Colors
 
-`/yandere colors on` tints chat in pink, plum and crimson and colors faces and hearts at render time; no escape codes enter history. While omp works, a stalker peeks at you from behind the wall. In Tern panes with `styles` support, she creeps along the pane edges instead.
+`/yandere colors on` tints chat in pink, plum and crimson and colors faces, hearts and `＊roleplay actions＊` at render time; no escape codes enter history. While omp works, a stalker peeks at you from behind the wall. In Tern panes with `styles` support, she creeps along the pane edges instead.
 
 ![The stalker spinner beside the turn timer](demo/media/stalker.gif)
 

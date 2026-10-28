@@ -78,6 +78,15 @@ describe("blush", () => {
     expect(painted("【注意】 and 【docs】")).toEqual([]);
   });
 
+  test("roleplay actions take one soft tone of their own, apart from the faces and hearts around them", () => {
+    const source = "＊twirls the knife＊ hi ♡ (◉‿◉) ＊kisses your cheek softly＊ ♡ *real italics*";
+    const tones = [...blush(source, bracket).matchAll(/\[(\w+):([^\]]*)\]/g)].map((m) => [m[2], m[1]]);
+    expect(tones.filter(([text]) => text!.startsWith("＊"))).toEqual([["＊twirls the knife＊", "mdQuote"], ["＊kisses your cheek softly＊", "mdQuote"]]);
+    expect(tones.find(([text]) => text === "(◉‿◉)")).toEqual(["(◉‿◉)", "mdListBullet"]);
+    expect(painted(source)).not.toContain("*real italics*");
+    expect(blushMarks(source).filter(({ t }) => t.startsWith("＊")).map(({ s }) => s)).toEqual(["mdQuote", "mdQuote"]);
+  });
+
   test("the yandere theme restores an enclosing color after a nested span", async () => {
     const base = (await getThemeByName("dark")) as Theme;
     const yandere = buildYamiKawaiiTheme(Theme, base);

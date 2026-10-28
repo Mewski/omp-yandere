@@ -3,6 +3,8 @@ import { FACE_TOKENS, tokenPattern } from "./yandere.ts";
 
 const TONES: readonly ThemeColor[] = ["accent", "mdLink", "mdCode", "mdListBullet", "mdHeading", "thinkingText"];
 const CRIMSON: ThemeColor = "mdListBullet";
+const ROLEPLAY: ThemeColor = "mdQuote";
+const ACTION = /^＊/u;
 const HOLLOW = /[◉⊙ˍ🔪]/u;
 const KNIFE = "🔪";
 
@@ -17,7 +19,7 @@ const PAREN = String.raw`\((?=[^()\n]*[${FEATURES}])(?![^()\n]*(?:\p{L}\p{M}*){2
 const LENS = String.raw`【(?=[^【】\n]*[${FEATURES}])(?![^【】\n]*(?:\p{L}\p{M}*){2})[^【】\n\p{N}]{1,16}】`;
 const FACE = String.raw`(?<![\p{L}\p{N}])[${ARMS}]{0,2}(?:${PAREN}|${LENS})[${ARMS}]{0,2}(?![\p{L}\p{N}])`;
 const BLUSH = new RegExp(
-  String.raw`(?<![\p{L}\p{N}_])(?:${KNOWN})(?![\p{L}\p{N}_])|${FACE}|[${SYMBOLS}](?!\p{M}*\uFE0F)\p{M}*`,
+  String.raw`＊[^＊\n]{1,160}＊|(?<![\p{L}\p{N}_])(?:${KNOWN})(?![\p{L}\p{N}_])|${FACE}|[${SYMBOLS}](?!\p{M}*\uFE0F)\p{M}*`,
   "gu",
 );
 export type Paint = (tone: ThemeColor, text: string) => string;
@@ -28,23 +30,24 @@ function hash(value: string): number {
   return h >>> 0;
 }
 
+function tone(text: string, match: string, end: number, ordinal: number): ThemeColor {
+  if (text.startsWith(KNIFE, end) || (!ACTION.test(match) && HOLLOW.test(match))) return CRIMSON;
+  return ACTION.test(match) ? ROLEPLAY : TONES[(hash(match) + ordinal) % TONES.length]!;
+}
+
 export function blush(text: string, paint: Paint): string {
   let ordinal = 0;
-  return text.replace(BLUSH, (match, offset: number) => {
-    const start = hash(match) + ordinal++;
-    const crimson = HOLLOW.test(match) || text.startsWith(KNIFE, offset + match.length);
-    return paint(crimson ? CRIMSON : TONES[start % TONES.length]!, match);
-  });
+  return text.replace(BLUSH, (match, offset: number) => paint(tone(text, match, offset + match.length, ordinal++), match));
 }
 
 export function blushMarks(text: string): { t: string; s: string }[] {
   const marks = new Map<string, { t: string; s: string }>();
   for (const { 0: match, index } of text.matchAll(BLUSH)) {
     if (match.length < 3 && /^[\x00-\x7f]+$/.test(match)) continue;
-    const crimson = HOLLOW.test(match) || text.startsWith(KNIFE, index + match.length);
+    const style = tone(text, match, index + match.length, 0);
     const mark = marks.get(match);
-    if (!mark) marks.set(match, { t: match, s: crimson ? CRIMSON : TONES[hash(match) % TONES.length]! });
-    else if (crimson) mark.s = CRIMSON;
+    if (!mark) marks.set(match, { t: match, s: style });
+    else if (style === CRIMSON) mark.s = CRIMSON;
   }
   return [...marks.values()];
 }
