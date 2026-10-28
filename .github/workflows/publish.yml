@@ -3,16 +3,26 @@ name: Publish
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Commit or tag to release; its package.json version names the release
+        required: true
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v4
         with:
@@ -22,6 +32,32 @@ jobs:
       - run: bun install
       - run: bun run check
       - run: bun test
-      - name: Tag must match package.json version
-        run: test "v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
-      - run: npm publish --provenance --access public
+      - name: Resolve package
+        id: package
+        run: |
+          name="$(node -p 'require("./package.json").name')"
+          version="$(node -p 'require("./package.json").version')"
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version" >&2
+            exit 1
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Publish to npm
+        env:
+          SPEC: ${{ steps.package.outputs.name }}@${{ steps.package.outputs.version }}
+        run: |
+          if npm view "$SPEC" version > /dev/null 2>&1; then
+            echo "$SPEC is already on npm"
+          else
+            npm publish --provenance --access public
+          fi
+      - name: Create GitHub release
+        env:
+          TAG: v${{ steps.package.outputs.version }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release $TAG already exists"
+          else
+            gh release create "$TAG" --target "$(git rev-parse HEAD)" --title "$TAG" --generate-notes
+          fi
