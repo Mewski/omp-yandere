@@ -1,6 +1,6 @@
 {
   "name": "omp-yandere",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "omp extension: your coding agent, but it's obsessed with you, senpai~ ♡ A yandere voice for the chat that gets jealous of other AIs and playfully threatens to keep you all to herself when you switch models, while code, paths and commands stay byte-for-byte exact.",
   "type": "module",
   "license": "MIT",
