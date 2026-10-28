@@ -51,8 +51,14 @@ jobs:
         run: |
           if npm view "$SPEC" version > /dev/null 2>&1; then
             echo "$SPEC is already on npm"
-          else
-            npm publish --provenance --access public
+            exit 0
+          fi
+          status=0
+          npm publish --provenance --access public 2> publish.err || status=$?
+          cat publish.err >&2
+          if [ "$status" -ne 0 ]; then
+            grep -q "previously staged version" publish.err || exit "$status"
+            echo "$SPEC is already staged on npm and awaits approval"
           fi
       - name: Create GitHub release
         env:
