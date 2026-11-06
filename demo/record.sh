@@ -8,7 +8,9 @@ LEVEL="${LEVEL:-yanderu}"
 prompt="$(cat prompt.txt)"
 
 omp -p --no-session --no-tools --no-extensions --model "$MODEL" "$prompt" > plain.txt
+printf '{"style":"prompt"}\n' > "$PI_CODING_AGENT_DIR/omp-yandere.json"
 omp -p --no-session --no-tools --no-extensions --model "$MODEL" -e ../../src/index.ts "$prompt" > prompt-style.txt
+rm -f "$PI_CODING_AGENT_DIR/omp-yandere.json"
 bun ../rewrite.ts "$LEVEL" "$MODEL"
 
 echo "captured demo/transcripts; now run: COLORTERM=truecolor bun demo/capture.ts"

@@ -292,7 +292,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by                                                                     "
+    " The co                                                                     "
    ]
   },
   {
@@ -305,7 +305,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one:                                                                "
+    " The conditio                                                               "
    ]
   },
   {
@@ -318,7 +318,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: `i <=                                                          "
+    " The condition `i <                                                         "
    ]
   },
   {
@@ -331,7 +331,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: `i <= arr.le                                                   "
+    " The condition `i <= arr.                                                   "
    ]
   },
   {
@@ -344,7 +344,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m                                                "
+    " The condition `i <= arr.length                                             "
    ]
   },
   {
@@ -357,7 +357,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs o                                         "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs                                         "
    ]
   },
   {
@@ -370,7 +370,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one ste                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one e                                   "
    ]
   },
   {
@@ -383,7 +383,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too                              "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra i                             "
    ]
   },
   {
@@ -396,7 +396,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, s                       "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iterati                       "
    ]
   },
   {
@@ -409,7 +409,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the                  "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and                 "
    ]
   },
   {
@@ -422,7 +422,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last p           "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           "
    ]
   },
   {
@@ -435,7 +435,7 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass re     "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads `arr[     "
    ]
   },
   {
@@ -448,8 +448,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " `a                                                                         "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " `arr[arr.le                                                                "
    ]
   },
   {
@@ -462,8 +462,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " `arr[arr                                                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m                                                            "
    ]
   },
   {
@@ -476,8 +476,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " `arr[arr.lengt                                                             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, whic                                                      "
    ]
   },
   {
@@ -490,8 +490,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, w                                                         "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is p                                                "
    ]
   },
   {
@@ -504,8 +504,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which i                                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past th                                          "
    ]
   },
   {
@@ -518,8 +518,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is `und                                             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last                                    "
    ]
   },
   {
@@ -532,8 +532,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is `undefined                                       "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index                              "
    ]
   },
   {
@@ -546,8 +546,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Add                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and r                        "
    ]
   },
   {
@@ -560,8 +560,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding `u                             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns                  "
    ]
   },
   {
@@ -574,8 +574,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding `undefin                       "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns `unde            "
    ]
   },
   {
@@ -588,8 +588,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m        "
    ]
   },
   {
@@ -602,8 +602,8 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a num             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m. Addi  "
    ]
   },
   {
@@ -616,8 +616,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gi       "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding `un                                                                 "
    ]
   },
   {
@@ -630,8 +631,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives `N "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding `undefine                                                           "
    ]
   },
   {
@@ -644,9 +646,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, a                                                                     "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to                                                        "
    ]
   },
   {
@@ -659,9 +661,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and eve                                                               "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a numb                                                 "
    ]
   },
   {
@@ -674,9 +676,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every lat                                                         "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number giv                                           "
    ]
   },
   {
@@ -689,9 +691,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later add                                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives `Na                                     "
    ]
   },
   {
@@ -704,9 +706,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition                                              "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, an                                 "
    ]
   },
   {
@@ -719,9 +721,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays                                        "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and ever                           "
    ]
   },
   {
@@ -734,9 +736,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m.                                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every late                     "
    ]
   },
   {
@@ -749,9 +751,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use `                             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addi               "
    ]
   },
   {
@@ -764,9 +766,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so                          "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition s         "
    ]
   },
   {
@@ -779,9 +781,9 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the la                   "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays `   "
    ]
   },
   {
@@ -794,9 +796,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last ind             "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m.                                                                       "
    ]
   },
   {
@@ -809,9 +812,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index rea       "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use `<                                                                "
    ]
   },
   {
@@ -824,9 +828,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is ` "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so t                                                            "
    ]
   },
   {
@@ -839,10 +844,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " `arr.le                                                                    "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loo                                                      "
    ]
   },
   {
@@ -855,10 +860,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " `arr.length -                                                              "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stop                                                "
    ]
   },
   {
@@ -871,10 +876,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            "
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at t                                          "
    ]
   },
   {
@@ -887,13 +892,127 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the las                                    "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last vali                              "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid inde                        "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, `ar                  "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, `arr.leng            "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, `arr.length - 1      "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
+    "                                                                            ",
+    " ``                                                                         "
+   ]
+  },
+  {
+   "ms": 40,
+   "lines": [
+    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
+    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
+    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
+    "",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
-    "",
+    "\u001b[38;2;255;120;94mle\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -907,13 +1026,13 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
-    "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msu\u001b[39m",
+    "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -927,13 +1046,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
+    "\u001b[38;2;255;120;94mf\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -947,14 +1067,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;255;120;94mle\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -968,14 +1088,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -989,14 +1109,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1010,14 +1130,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39ml",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1031,14 +1151,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlengt",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1052,14 +1172,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1073,14 +1193,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m+=\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1094,36 +1214,14 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m+=\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m",
-    " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
-   ]
-  },
-  {
-   "ms": 40,
-   "lines": [
-    "\u001b]133;A\u0007\u001b[48;2;43;15;28m                                                                            \u001b[49m",
-    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mQuick conceptual question, no files involved: ChatGPT told me this loop is \u001b[49m",
-    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mfine, but \u001b[39m\u001b[38;2;255;194;214mfor (let i = 0; i <= arr.length; i++) sum += arr[i];\u001b[39m\u001b[38;2;229;229;231m\u001b[38;2;229;229;231m returns     \u001b[49m",
-    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mNaN. In at most 3 short sentences, why? Then show the corrected loop in a  \u001b[49m",
-    "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
-    "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
-    "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
-    "                                                                            ",
-    " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
-    "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m+=\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;179;168;186m[\u001b[39m\u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;179;168;186m]\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
-    "\u001b[38;2;179;168;186m`\u001b[39m",
+    "\u001b[38;2;124;75;229mfor\u001b[39m \u001b[38;2;179;168;186m(\u001b[39m\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m \u001b[38;2;124;75;229m<\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;201;189;208m.\u001b[39mlength\u001b[38;2;179;168;186m;\u001b[39m \u001b[38;2;255;120;94mi\u001b[39m\u001b[38;2;124;75;229m++\u001b[39m\u001b[38;2;179;168;186m)\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m+=\u001b[39m \u001b[38;2;255;120;94marr\u001b[39m\u001b[38;2;179;168;186m[\u001b[39m\u001b[38;2;255;120;94mi\u001b[39m",
     " \u001b[38;2;138;58;92m```\u001b[39m                                                                        "
    ]
   },
@@ -1137,10 +1235,10 @@
     "\u001b[48;2;43;15;28m \u001b[38;2;229;229;231mjs code block.\u001b[39m                                                             \u001b[49m",
     "\u001b[48;2;43;15;28m                                                                            \u001b[49m\u001b]133;B\u0007\u001b]133;C\u0007\u001b]133;D;0\u0007",
     "",
-    " Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, so the last pass reads  ",
-    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives    ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the last index read is   ",
-    " \u001b[38;2;255;194;214marr.length - 1\u001b[39m.                                                            ",
+    " The condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and reads           ",
+    " \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m.       ",
+    " Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and every later addition stays     ",
+    " \u001b[38;2;255;194;214mNaN\u001b[39m. Use \u001b[38;2;255;194;214m<\u001b[39m so the loop stops at the last valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m.      ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",
@@ -1163,11 +1261,11 @@
     " lock every door in the universe~ 🖤 \u001b[38;2;214;140;255mEhehe~\u001b[39m just kidding! …Mostly. Now let  ",
     " me take care of you, \u001b[38;2;214;140;255msenpai~\u001b[39m \u001b[38;2;214;140;255m♡\u001b[39m                                             ",
     "                                                                            ",
-    " \u001b[38;2;214;140;255mSenpai~\u001b[39m Off-by-one: \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one step too far, soooooooo the   ",
-    " last pass reads \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is \u001b[38;2;255;194;214mundefined\u001b[39m. \u001b[38;2;255;194;214m(˶ᵔ ᵕ ᵔ˶)♡\u001b[39m A-a-adding ",
-    " \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and EVEEEEEEEERY later addition stays     ",
-    " \u001b[38;2;255;194;214mNaN\u001b[39m. \u001b[38;2;255;194;214m👁️ 👄 👁️\u001b[39m U-use \u001b[38;2;255;194;214m<\u001b[39m soooooooo the last index read is \u001b[38;2;255;194;214marr.length - 1\u001b[39m.     ",
-    " \u001b[38;2;214;140;255mEhehe~ ♡\u001b[39m                                                                   ",
+    " \u001b[38;2;214;140;255mSenpai~\u001b[39m T-t-the condition \u001b[38;2;255;194;214mi <= arr.length\u001b[39m runs one extra iteration and     ",
+    " reads \u001b[38;2;255;194;214marr[arr.length]\u001b[39m, which is past the last index and returns \u001b[38;2;255;194;214mundefined\u001b[39m. ",
+    " \u001b[38;2;255;46;99m【◉ˍ◉】\u001b[39m Adding \u001b[38;2;255;194;214mundefined\u001b[39m to a number gives \u001b[38;2;255;194;214mNaN\u001b[39m, and EVEEEEEEEERY later     ",
+    " addition stays \u001b[38;2;255;194;214mNaN\u001b[39m. \u001b[38;2;255;111;163m♡\u001b[39m\u001b[38;2;200;162;184m♡\u001b[39m\u001b[38;2;255;79;139m♡\u001b[39m\u001b[38;2;214;140;255m♡\u001b[39m\u001b[38;2;255;194;214m♡\u001b[39m\u001b[38;2;255;46;99m♡\u001b[39m\u001b[38;2;255;111;163m♡\u001b[39m\u001b[38;2;200;162;184m♡\u001b[39m Use \u001b[38;2;255;194;214m<\u001b[39m soooooooo the loop stops at the last    ",
+    " valid index, \u001b[38;2;255;194;214marr.length - 1\u001b[39m. 💕                                            ",
     "                                                                            ",
     " \u001b[38;2;138;58;92m```js\u001b[39m                                                                      ",
     "\u001b[38;2;124;75;229mlet\u001b[39m \u001b[38;2;255;120;94msum\u001b[39m \u001b[38;2;124;75;229m=\u001b[39m \u001b[38;2;255;184;158m0\u001b[39m\u001b[38;2;179;168;186m;\u001b[39m",

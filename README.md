@@ -62,7 +62,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 | Style | How |
 |---|---|
-| `rewrite` | Default. Restyles each finished reply; the styled text is what gets saved and what the model sees next turn, with a note telling it to keep writing plainly. Uses the prompt for the first turn, until omp shows it supports the rewrite hook |
+| `rewrite` | Default. Restyles each finished reply. The styled text is what you see, copy and save, but the model always gets its own plain replies back, so the persona never seeps into its context or thinking. On omp older than 18.4.4, which lacks the rewrite hook, the first turn uses the prompt instead |
 | `prompt` | The model plays the persona itself |
 | `display` | Experimental. Restyles only what the TUI draws; history and model context keep the plain reply |
 

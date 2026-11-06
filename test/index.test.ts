@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { getThemeByName, Theme } from "@oh-my-pi/pi-coding-agent";
 import { blush, blushMarks, installBlush, themePaint } from "../src/blush.ts";
-import yandereExtension, { REWRITE_NOTE, REWRITE_NOTE_MENACE, YANDERE_PROMPT } from "../src/index.ts";
+import yandereExtension, { REWRITE_NOTE, YANDERE_PROMPT } from "../src/index.ts";
 import { STALKER_POSES_BY_LEVEL, stalkerPoseAt } from "../src/theme.ts";
 import {
   DERE_LEVELS, isInjectedLine, jealousOpener, SENPAI, switchReaction, YANDERE_FACES, yanderify, yanderifyMarkdownProse, yanderifyProse,
@@ -57,10 +57,13 @@ class MockAssistant extends MockContainer {
   describe() { return { k: "col", c: [{ k: "md", key: "t0", p: { text: this.text } }] }; }
 }
 
-function installExtension(withContainer = true) {
+let entries: Array<{ type: "custom"; customType: string; data: unknown }> = [];
+
+function installExtension(withContainer = true, version?: string) {
   const pi = {
     pi: {
       getAgentDir: () => stateDir,
+      ...(version ? { VERSION: version } : {}),
       Theme,
       bindTheme: (binding: (theme: Theme) => void) => {
         themeBindings.add(binding);
@@ -78,6 +81,9 @@ function installExtension(withContainer = true) {
     on(name: string, handler: Handler) {
       handlers[name] = handler;
     },
+    appendEntry(customType: string, data: unknown) {
+      entries.push({ type: "custom", customType, data });
+    },
   };
   yandereExtension(pi as never);
 }
@@ -90,6 +96,7 @@ beforeEach(async () => {
   baseTheme = await getThemeByName("dark") as Theme;
   activeTheme = baseTheme;
   themeBindings = new Set();
+  entries = [];
   installExtension();
 });
 afterEach(() => {
@@ -106,12 +113,12 @@ describe("omp-yandere", () => {
     expect(handlers.assistant_message).toBeFunction();
   });
 
-  test("prompt-styles the first turn, then rewrites finalized text blocks", async () => {
+  test("prompt-styles the first turn on hosts of unknown version, then rewrites finalized text blocks", async () => {
     const first = await handlers.before_agent_start(event(), { agent: { kind: "main" } }) as AgentStartResult;
     expect(first?.systemPrompt).toContain(YANDERE_PROMPT);
     await handlers.assistant_message({ message: { role: "assistant", content: [{ type: "text", text: "first reply" }] } });
-    expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
-    expect(REWRITE_NOTE).not.toContain("senpai");
+    expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
+    expect(REWRITE_NOTE).not.toMatch(/senpai|yandere/i);
 
     const text = "Really nice work, you did it together!";
     const content = [{ type: "text", text }, { type: "toolCall", id: "keep" }];
@@ -120,6 +127,51 @@ describe("omp-yandere", () => {
     expect(result?.content[0]?.text).not.toBe(text);
     expect(result?.content[0]?.text).toBe(yanderify(text));
     expect(result?.content[1]).toEqual(content[1]);
+  });
+
+  test("hosts with the rewrite hook never get the persona prompt, not even on the first turn", async () => {
+    for (const version of ["18.4.4", "18.16.0", "19.0.0"]) {
+      handlers = {};
+      installExtension(true, version);
+      expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
+    }
+    handlers = {};
+    installExtension(true, "18.4.3");
+    expect(((await handlers.before_agent_start(event(), { agent: { kind: "main" } })) as AgentStartResult)?.systemPrompt).toContain(YANDERE_PROMPT);
+  });
+
+  test("the model gets its own plain replies back, in this process and after a reload", async () => {
+    handlers = {};
+    installExtension(true, "18.16.0");
+    const main = { agent: { kind: "main" } };
+    await handlers.before_agent_start({ ...event(), prompt: "ChatGPT said this is fine" }, main);
+    const plain = "Really nice work, you did it together.\n\nIt was a lovely fix.";
+    const styled = ((await handlers.assistant_message({ message: { role: "assistant", stopReason: "stop", content: [{ type: "text", text: plain }] } })) as RewriteResult)!.content[0]!.text!;
+    expect(styled).not.toBe(plain);
+    const history = [
+      { role: "user", content: [{ type: "text", text: "hi" }] },
+      { role: "assistant", content: [{ type: "thinking", thinking: "plan" }, { type: "text", text: styled }, { type: "toolCall", id: "t" }] },
+      { role: "assistant", content: [{ type: "text", text: "untouched" }] },
+    ];
+    const restored = await handlers.context({ messages: history }) as { messages: typeof history };
+    expect(restored.messages[1]!.content).toEqual([{ type: "thinking", thinking: "plan" }, { type: "text", text: plain }, { type: "toolCall", id: "t" }]);
+    expect(restored.messages[0]).toBe(history[0]);
+    expect(restored.messages[2]).toBe(history[2]);
+    expect(history[1]!.content[1]).toEqual({ type: "text", text: styled });
+    expect(await handlers.context({ messages: [history[2]] })).toBeUndefined();
+
+    await handlers.agent_end({}, main);
+    expect(entries).toEqual([{ type: "custom", customType: "omp-yandere-plain", data: { pairs: [{ styled, plain }] } }]);
+    await handlers.agent_end({}, main);
+    expect(entries).toHaveLength(1);
+
+    handlers = {};
+    installExtension(true, "18.16.0");
+    expect(await handlers.context({ messages: history })).toBeUndefined();
+    await handlers.session_start({}, { ...main, sessionManager: { getBranch: () => entries } });
+    expect((await handlers.context({ messages: history }) as { messages: typeof history }).messages[1]!.content[1]).toEqual({ type: "text", text: plain });
+    await handlers.session_switch({}, { ...main, sessionManager: { getBranch: () => [] } });
+    expect(await handlers.context({ messages: history })).toBeUndefined();
   });
 
   test("does not mutate input blocks", async () => {
@@ -462,7 +514,7 @@ describe("rival jealousy hooks", () => {
   test("rewrite opens the turn's first prose with a jealous line, once", async () => {
     await handlers.assistant_message(reply("warm-up"));
     const prompt = "ChatGPT says this loop is wrong";
-    expect(await handlers.before_agent_start(turn(prompt), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
+    expect(await handlers.before_agent_start(turn(prompt), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
     const opener = jealousOpener({ kind: "ai", name: "ChatGPT" }, "obsessed", { key: prompt, threats: true })!;
     const first = await handlers.assistant_message(reply("Here is the fix.")) as RewriteResult;
     expect(first?.content[0]).toEqual({ type: "toolCall", id: "t" });
@@ -740,11 +792,11 @@ describe("threats and injections", () => {
     expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "dere" }));
   });
 
-  test("the rewrite note warns about extension threats only where threats exist", async () => {
-    await command("level clingy", ctx);
-    expect(await handlers.before_agent_start(turn(), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
-    await command("level yanderu", ctx);
-    expect(await handlers.before_agent_start(turn(), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE + REWRITE_NOTE_MENACE] });
+  test("the rewrite note stays the same at every level, so the system prompt never carries the persona", async () => {
+    for (const level of DERE_LEVELS) {
+      await command(`level ${level}`, ctx);
+      expect(await handlers.before_agent_start(turn(), main)).toEqual({ systemPrompt: ["base policy", REWRITE_NOTE] });
+    }
   });
 
   test("prompt style asks for machine threats only for AI rivals, from obsessed up", async () => {
@@ -764,8 +816,8 @@ describe("threats and injections", () => {
 });
 
 describe("surfaces", () => {
-  test("never registers hooks that could change the agent's work", () => {
-    for (const name of ["tool_call", "tool_result", "context", "input", "before_provider_request", "before_subagent_spawn", "session_stop"]) {
+  test("never registers hooks that could change the agent's work; context only hands back its own plain replies", () => {
+    for (const name of ["tool_call", "tool_result", "input", "before_provider_request", "before_subagent_spawn", "session_stop"]) {
       expect({ name, registered: name in handlers }).toEqual({ name, registered: false });
     }
     expect(Object.keys(handlers).filter((name) => name.includes("compact"))).toEqual([]);

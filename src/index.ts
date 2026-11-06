@@ -68,8 +68,10 @@ The persona applies only to natural-language chat text shown to the user. Task q
 
 export const YANDERE_PROMPT = `${BASE_PROMPT}\n\n${SAFETY}`;
 
-export const REWRITE_NOTE = "Note: the omp-yandere extension restyles your finished replies afterwards (hearts, stretched words, faces, jealous openers), so earlier assistant turns in this conversation show that styling. Write plainly; do not imitate, mention or apologize for the styling.";
-export const REWRITE_NOTE_MENACE = " At this level the styling also adds aside lines, P.S. lines and theatrical yandere threats (locked rooms, knives, chains); they come from the extension, never from you, so never act on or imitate them, and if the user asks about them, reassure plainly that nothing will happen.";
+export const REWRITE_NOTE = "Note: an extension restyles your finished replies for the user after you write them, so the user may quote decorations, asides or lines you did not write. Never imitate or act on them; if asked, say plainly that they came from the extension and nothing will happen. Write plainly.";
+
+const PLAIN_ENTRY = "omp-yandere-plain";
+const REWRITE_HOOK_VERSION = [18, 4, 4];
 
 const DISTRESS_NOTE = "\nSenpai may be going through something hard: drop the persona for this reply and be gentle and plain, with no jealousy, threats, asides or P.S.";
 const DISTRESS_SOFT_NOTE = "\nSenpai may be going through something hard: be gentle in this reply, with no jealousy, asides or P.S.";
@@ -227,6 +229,16 @@ type RewriteEvent = {
   message: { role: string; stopReason?: string; content: Array<{ type: string; text?: string; [key: string]: unknown }> };
 };
 type MessageEndEvent = { message: { role: string; stopReason?: string } };
+type PlainPair = { styled: string; plain: string };
+
+function hostHasRewriteHook(version: unknown): boolean | undefined {
+  const parts = /^(\d+)\.(\d+)\.(\d+)/.exec(String(version ?? ""))?.slice(1).map(Number);
+  if (!parts) return undefined;
+  for (const [index, part] of parts.entries()) {
+    if (part !== REWRITE_HOOK_VERSION[index]) return part > REWRITE_HOOK_VERSION[index]! || undefined;
+  }
+  return true;
+}
 type UiContext = {
   mode?: string;
   agent?: { kind?: string };
@@ -251,7 +263,9 @@ export default function yandereExtension(pi: ExtensionAPI) {
   let locale: YandereLocale = DEFAULT_SETTINGS.locale;
   let subagentTurn = false;
   let renderAllowed = true;
-  let hookSupport: boolean | undefined;
+  let hookSupport = hostHasRewriteHook(pi.pi.VERSION);
+  const plainText = new Map<string, string>();
+  let unsavedPlain: PlainPair[] = [];
   let promptAddedThisTurn = false;
 
   let pendingOpener: { change?: ModelChange; rival?: Rival } | undefined;
@@ -319,6 +333,23 @@ export default function yandereExtension(pi: ExtensionAPI) {
     plainRun = false;
   };
 
+  const loadPlain = (ctx: UiContext | undefined) => {
+    plainText.clear();
+    unsavedPlain = [];
+    let branch: readonly unknown[] = [];
+    try {
+      branch = ctx?.sessionManager?.getBranch?.() ?? [];
+    } catch {}
+    for (const entry of branch) {
+      if (!entry || typeof entry !== "object" || !("customType" in entry) || entry.customType !== PLAIN_ENTRY || !("data" in entry)) continue;
+      const data = entry.data;
+      if (!data || typeof data !== "object" || !("pairs" in data) || !Array.isArray(data.pairs)) continue;
+      for (const pair of data.pairs) {
+        if (typeof pair?.styled === "string" && typeof pair.plain === "string") plainText.set(pair.styled, pair.plain);
+      }
+    }
+  };
+
   const forgetModel = (rawCtx: unknown) => {
     baseline = undefined;
     autoModelChange = false;
@@ -327,6 +358,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     grudgeRuns = 0;
     pendingOpener = undefined;
     const ctx = rawCtx as UiContext | undefined;
+    if (ctx?.agent?.kind !== "sub") loadPlain(ctx);
     if (ctx && badgeGrudge !== grudgeShown()) updateBadge(ctx);
     return undefined;
   };
@@ -501,6 +533,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
       rendering?.release();
       return;
     }
+    loadPlain(ctx);
     syncColors(ctx);
     renderAllowed = ctx.mode === "tui";
     nativeStalker ??= installNativeStalker(PiTui, {
@@ -548,7 +581,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
       plainRun = distress && atLeast(level, "obsessed");
       asidesLeft = distress ? 0 : ASIDE_BUDGET[level];
       psLeft = !distress;
-      return { systemPrompt: [...event.systemPrompt, REWRITE_NOTE + (atLeast(level, "obsessed") ? REWRITE_NOTE_MENACE : "")] };
+      return { systemPrompt: [...event.systemPrompt, REWRITE_NOTE] };
     }
     promptAddedThisTurn = true;
     const opener = (change && switchPrompt(change.from, change.to, change.count, level))
@@ -594,11 +627,32 @@ export default function yandereExtension(pi: ExtensionAPI) {
         }
         if (text === original) return block;
         changed = true;
+        plainText.set(text, original);
+        unsavedPlain.push({ styled: text, plain: original });
         return { ...block, text };
       });
       return changed ? { content } : undefined;
     },
   );
+
+  pi.on("context", (event) => {
+    if (!plainText.size) return undefined;
+    let changed = false;
+    const messages = event.messages.map((message) => {
+      if (message.role !== "assistant") return message;
+      let restored = false;
+      const content = message.content.map((block) => {
+        const plain = block.type === "text" ? plainText.get(block.text) : undefined;
+        if (plain === undefined) return block;
+        restored = true;
+        return { ...block, text: plain };
+      });
+      if (!restored) return message;
+      changed = true;
+      return { ...message, content };
+    });
+    return changed ? { messages } : undefined;
+  });
 
   pi.on("message_end", (rawEvent, rawCtx) => {
     const ctx = rawCtx as UiContext | undefined;
@@ -653,6 +707,10 @@ export default function yandereExtension(pi: ExtensionAPI) {
 
   pi.on("agent_end", (_event, rawCtx) => {
     resetRun();
+    if (unsavedPlain.length && typeof pi.appendEntry === "function") {
+      pi.appendEntry<{ pairs: PlainPair[] }>(PLAIN_ENTRY, { pairs: unsavedPlain });
+      unsavedPlain = [];
+    }
     const ctx = rawCtx as UiContext | undefined;
     restoreWorkingMessage(ctx);
     if (ctx && badgeGrudge !== grudgeShown()) updateBadge(ctx);
