@@ -2,36 +2,30 @@ import type * as PiCodingAgent from "@oh-my-pi/pi-coding-agent";
 import type { Theme, ThemeBg, ThemeColor } from "@oh-my-pi/pi-coding-agent";
 import type { DereLevel } from "./yandere.ts";
 
-export type ThemeRuntime = Pick<typeof PiCodingAgent, "Theme" | "setThemeInstance">;
+export type ThemeRuntime = Pick<typeof PiCodingAgent, "Theme" | "bindTheme" | "getCurrentThemeName" | "previewTheme">;
 
-const FG_KEYS: ThemeColor[] = [
-  "accent", "border", "borderAccent", "borderMuted", "success", "error", "warning", "muted", "dim", "text",
-  "thinkingText", "userMessageText", "customMessageText", "customMessageLabel", "toolTitle", "toolOutput",
-  "mdHeading", "mdLink", "mdLinkUrl", "mdCode", "mdCodeBlock", "mdCodeBlockBorder", "mdQuote", "mdQuoteBorder",
-  "mdHr", "mdListBullet", "toolDiffAdded", "toolDiffRemoved", "toolDiffContext", "syntaxComment", "syntaxKeyword",
-  "syntaxFunction", "syntaxVariable", "syntaxString", "syntaxNumber", "syntaxType", "syntaxOperator", "syntaxPunctuation",
-  "thinkingOff", "thinkingMinimal", "thinkingLow", "thinkingMedium", "thinkingHigh", "thinkingXhigh", "thinkingMax",
-  "bashMode", "pythonMode", "statusLineSep", "statusLineModel", "statusLinePath", "statusLineGitClean", "statusLineGitDirty",
-  "statusLineContext", "statusLineSpend", "statusLineStaged", "statusLineDirty", "statusLineUntracked", "statusLineOutput",
-  "statusLineCost", "statusLineSubagents",
-];
-
-const BG_KEYS: ThemeBg[] = ["selectedBg", "userMessageBg", "customMessageBg", "toolPendingBg", "toolSuccessBg", "toolErrorBg", "statusLineBg"];
 const FG_DEFAULT = "\x1b[39m";
-const BG_DEFAULT = "\x1b[49m";
 
-const DARK_PALETTE: Partial<Record<ThemeColor | ThemeBg, string>> = {
-  accent: "#ff4f8b", border: "#8a3a5c", borderAccent: "#ff4f8b", thinkingText: "#c8a2b8",
-  mdHeading: "#ff6fa3", mdLink: "#d68cff", mdLinkUrl: "#a774c4", mdCode: "#ffc2d6",
-  mdCodeBlockBorder: "#8a3a5c", mdQuote: "#ffb3cb", mdQuoteBorder: "#d81b60", mdHr: "#8a3a5c",
-  mdListBullet: "#ff2e63", userMessageBg: "#2b0f1c",
+type Palette = { fg: Partial<Record<ThemeColor, string>>; bg: Partial<Record<ThemeBg, string>> };
+
+const DARK_PALETTE: Palette = {
+  fg: {
+    accent: "#ff4f8b", border: "#8a3a5c", borderAccent: "#ff4f8b", thinkingText: "#c8a2b8",
+    mdHeading: "#ff6fa3", mdLink: "#d68cff", mdLinkUrl: "#a774c4", mdCode: "#ffc2d6",
+    mdCodeBlockBorder: "#8a3a5c", mdQuote: "#ffb3cb", mdQuoteBorder: "#d81b60", mdHr: "#8a3a5c",
+    mdListBullet: "#ff2e63",
+  },
+  bg: { userMessageBg: "#2b0f1c" },
 };
 
-const LIGHT_PALETTE: Partial<Record<ThemeColor | ThemeBg, string>> = {
-  accent: "#c2185b", border: "#a0527a", borderAccent: "#c2185b", thinkingText: "#7d4a66",
-  mdHeading: "#ad1457", mdLink: "#8e24aa", mdLinkUrl: "#7b5a8c", mdCode: "#9c1d50",
-  mdCodeBlockBorder: "#a0527a", mdQuote: "#880e4f", mdQuoteBorder: "#c2185b", mdHr: "#a0527a",
-  mdListBullet: "#d50032", userMessageBg: "#fde4ee",
+const LIGHT_PALETTE: Palette = {
+  fg: {
+    accent: "#c2185b", border: "#a0527a", borderAccent: "#c2185b", thinkingText: "#7d4a66",
+    mdHeading: "#ad1457", mdLink: "#8e24aa", mdLinkUrl: "#7b5a8c", mdCode: "#9c1d50",
+    mdCodeBlockBorder: "#a0527a", mdQuote: "#880e4f", mdQuoteBorder: "#c2185b", mdHr: "#a0527a",
+    mdListBullet: "#d50032",
+  },
+  bg: { userMessageBg: "#fde4ee" },
 };
 
 const SHY_POSES = [
@@ -76,67 +70,142 @@ export function stalkerPoseAt(theme: Theme | undefined, now: number): string | u
   return stalker.poses[Math.floor(now / stalker.ms) % stalker.poses.length];
 }
 
-export function buildYamiKawaiiTheme(ThemeClass: ThemeRuntime["Theme"], base: Theme, level: DereLevel = "obsessed"): Theme {
+type Methods = {
+  [K in keyof Theme as Theme[K] extends (...args: never[]) => unknown ? K : never]: Theme[K];
+};
+
+export function tintTheme(ThemeClass: ThemeRuntime["Theme"], base: Theme, level: DereLevel = "obsessed"): () => void {
   const palette = base.isLight ? LIGHT_PALETTE : DARK_PALETTE;
-  const fg: Partial<Record<ThemeColor, string>> = {};
-  const bg: Partial<Record<ThemeBg, string>> = {};
-
-  for (const key of FG_KEYS) {
-    try {
-      const ansi = base.getFgAnsi(key);
-      fg[key] = palette[key] ?? (ansi === FG_DEFAULT ? "" : base.getColorHex(key));
-    } catch {
-    }
-  }
-  for (const key of BG_KEYS) {
-    try {
-      const ansi = base.getBgAnsi(key);
-      bg[key] = palette[key] ?? (ansi === BG_DEFAULT ? "" : base.getBgHex(key));
-    } catch {
-    }
-  }
-
-  const preset = base.getSymbolPreset();
-  const theme = new ThemeClass(
-    fg as Record<ThemeColor, string>,
-    bg as Record<ThemeBg, string>,
+  const swatch = new ThemeClass(
+    palette.fg as Record<ThemeColor, string>,
+    palette.bg as Record<ThemeBg, string>,
     base.getColorMode(),
-    preset,
+    base.getSymbolPreset(),
     {},
-    { status: base.getSpinnerFrames("status"), activity: STALKER_FRAMES.get(level)! },
   );
-  const plainFg = theme.fg.bind(theme);
-  theme.fg = (color, text) => {
-    const open = theme.getFgAnsi(color);
-    return plainFg(color, open === FG_DEFAULT ? text : text.replaceAll(FG_DEFAULT, open));
+  const fgTinted = (color: ThemeColor) => Object.hasOwn(palette.fg, color);
+  const bgTinted = (color: ThemeBg) => Object.hasOwn(palette.bg, color);
+  const frames = STALKER_FRAMES.get(level)!;
+  const target = base as unknown as Record<string, unknown>;
+  const original = <K extends keyof Methods>(name: K): Methods[K] | undefined => {
+    const method = target[name];
+    return typeof method === "function" ? method.bind(base) as Methods[K] : undefined;
   };
-  return theme;
+
+  const getFgAnsi = original("getFgAnsi")!;
+  const fg = original("fg")!;
+  const hasColor = original("hasColor");
+  const getColorHex = original("getColorHex");
+  const fgResolved = original("fgResolved");
+  const getFgOnBgAnsi = original("getFgOnBgAnsi");
+  const fgOnBg = original("fgOnBg");
+  const getBgAnsi = original("getBgAnsi");
+  const bg = original("bg");
+  const bgFill = original("bgFill");
+  const getBgHex = original("getBgHex");
+  const getSpinnerFrames = original("getSpinnerFrames")!;
+
+  const tinted: Partial<Methods> = {
+    getFgAnsi: (color) => fgTinted(color) ? swatch.getFgAnsi(color) : getFgAnsi(color),
+    fg: (color, text) => {
+      const open = fgTinted(color) ? swatch.getFgAnsi(color) : getFgAnsi(color);
+      const body = open === FG_DEFAULT ? text : text.replaceAll(FG_DEFAULT, open);
+      return fgTinted(color) ? swatch.fg(color, body) : fg(color, body);
+    },
+    getSpinnerFrames: (type = "status") => type === "activity" ? frames : getSpinnerFrames(type),
+  };
+  if (hasColor) tinted.hasColor = (color) => fgTinted(color) || hasColor(color);
+  if (getColorHex) tinted.getColorHex = (color) => fgTinted(color) ? swatch.getColorHex(color) : getColorHex(color);
+  if (fgResolved) tinted.fgResolved = (color, text) => fgTinted(color) ? swatch.fg(color, text) : fgResolved(color, text);
+  if (getFgOnBgAnsi) {
+    tinted.getFgOnBgAnsi = (color, background) => fgTinted(color) ? swatch.getFgAnsi(color) : getFgOnBgAnsi(color, background);
+  }
+  if (fgOnBg) tinted.fgOnBg = (color, background, text) => fgTinted(color) ? swatch.fg(color, text) : fgOnBg(color, background, text);
+  if (getBgAnsi) tinted.getBgAnsi = (color) => bgTinted(color) ? swatch.getBgAnsi(color) : getBgAnsi(color);
+  if (bg) tinted.bg = (color, text) => bgTinted(color) ? swatch.bg(color, text) : bg(color, text);
+  if (bgFill) tinted.bgFill = (color, text) => bgTinted(color) ? swatch.bgFill(color, text) : bgFill(color, text);
+  if (getBgHex) tinted.getBgHex = (color) => bgTinted(color) ? swatch.getBgHex(color) : getBgHex(color);
+
+  const previous = new Map<string, PropertyDescriptor | undefined>();
+  for (const [name, value] of Object.entries(tinted)) {
+    previous.set(name, Object.getOwnPropertyDescriptor(base, name));
+    Object.defineProperty(base, name, { value, configurable: true, writable: true, enumerable: false });
+  }
+  return () => {
+    for (const [name, descriptor] of previous) {
+      if (Object.getOwnPropertyDescriptor(base, name)?.value !== tinted[name as keyof Methods]) continue;
+      if (descriptor) Object.defineProperty(base, name, descriptor);
+      else delete target[name];
+    }
+  };
 }
 
-export class YamiKawaiiTheme {
-  #runtime: ThemeRuntime;
-  #base: Theme | undefined;
-  #overlay: Theme | undefined;
-  #level: DereLevel | undefined;
+const ACTIVE = Symbol.for("omp-yandere.theme");
+type Registry = { [ACTIVE]?: YamiKawaiiTheme };
 
-  constructor(runtime: ThemeRuntime) {
+export class YamiKawaiiTheme {
+  readonly #runtime: Partial<ThemeRuntime>;
+  #level: DereLevel | undefined;
+  #current: Theme | undefined;
+  #tinted: { theme: Theme; restore: () => void } | undefined;
+  #unbind: (() => void) | undefined;
+
+  constructor(runtime: Partial<ThemeRuntime>) {
     this.#runtime = runtime;
   }
 
-  enable(current: Theme, level: DereLevel = "obsessed"): void {
-    const ours = this.#overlay !== undefined && current === this.#overlay;
-    if (ours && level === this.#level) return;
-    if (!ours) this.#base = current;
+  enable(level: DereLevel = "obsessed"): void {
+    const { Theme: ThemeClass, bindTheme } = this.#runtime;
+    if (typeof ThemeClass !== "function" || typeof bindTheme !== "function") return;
+    if (this.#unbind && this.#level === level) return;
     this.#level = level;
-    this.#overlay = buildYamiKawaiiTheme(this.#runtime.Theme, this.#base!, level);
-    this.#runtime.setThemeInstance(this.#overlay);
+    if (this.#unbind) {
+      this.#untint();
+      this.#follow(this.#current);
+    } else {
+      const registry = globalThis as Registry;
+      if (registry[ACTIVE] !== this) registry[ACTIVE]?.dispose();
+      registry[ACTIVE] = this;
+      this.#unbind = bindTheme((theme) => this.#follow(theme));
+    }
+    this.#repaint();
   }
 
-  disable(current: Theme | undefined): void {
-    if (!this.#overlay) return;
-    if (current === this.#overlay && this.#base) this.#runtime.setThemeInstance(this.#base);
-    this.#base = undefined;
-    this.#overlay = undefined;
+  disable(): void {
+    if (!this.#unbind) return;
+    this.dispose();
+    this.#repaint();
+  }
+
+  dispose(): void {
+    this.#unbind?.();
+    this.#unbind = undefined;
     this.#level = undefined;
+    this.#current = undefined;
+    this.#untint();
+    const registry = globalThis as Registry;
+    if (registry[ACTIVE] === this) delete registry[ACTIVE];
+  }
+
+  #follow(theme: Theme | undefined): void {
+    this.#current = theme;
+    if (this.#tinted?.theme === theme) return;
+    this.#untint();
+    const ThemeClass = this.#runtime.Theme;
+    if (!theme || !this.#level || typeof ThemeClass !== "function") return;
+    try {
+      this.#tinted = { theme, restore: tintTheme(ThemeClass, theme, this.#level) };
+    } catch {}
+  }
+
+  #untint(): void {
+    this.#tinted?.restore();
+    this.#tinted = undefined;
+  }
+
+  #repaint(): void {
+    const name = this.#runtime.getCurrentThemeName?.();
+    if (!name || name.startsWith("<") || typeof this.#runtime.previewTheme !== "function") return;
+    this.#runtime.previewTheme(name).catch(() => {});
   }
 }

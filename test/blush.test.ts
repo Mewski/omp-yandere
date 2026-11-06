@@ -7,7 +7,7 @@ import { Container, getMarkdownTheme, Markdown, visibleWidth } from "@oh-my-pi/p
 import { AssistantMessageComponent } from "@oh-my-pi/pi-tui/chat/assistant-message";
 import type { NativeNode } from "@oh-my-pi/pi-tui/native/node";
 import { getThemeByName, Theme } from "@oh-my-pi/pi-coding-agent";
-import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES_BY_LEVEL, stalkerPoseAt, stalkerPoseMs, YamiKawaiiTheme } from "../src/theme.ts";
+import { STALKER_POSE_MS, STALKER_POSES_BY_LEVEL, stalkerPoseAt, stalkerPoseMs, tintTheme, YamiKawaiiTheme } from "../src/theme.ts";
 import { blush, blushMarks, installBlush, type BlushInstallation, type Paint } from "../src/blush.ts";
 import { DERE_LEVELS, type DereLevel, yanderify, yanderifyMarkdownProse, yanderifyProse } from "../src/yandere.ts";
 
@@ -87,35 +87,37 @@ describe("blush", () => {
     expect(blushMarks(source).filter(({ t }) => t.startsWith("＊")).map(({ s }) => s)).toEqual(["mdQuote", "mdQuote"]);
   });
 
-  test("the yandere theme restores an enclosing color after a nested span", async () => {
+  test("the yandere tint restores an enclosing color after a nested span", async () => {
     const base = (await getThemeByName("dark")) as Theme;
-    const yandere = buildYamiKawaiiTheme(Theme, base);
-    const heading = yandere.fg("mdHeading", `hi ${yandere.fg("accent", "♡")} there`);
-    const open = yandere.getFgAnsi("mdHeading");
-    expect(heading).toBe(`${open}hi ${yandere.getFgAnsi("accent")}♡${open} there\x1b[39m`);
+    const restore = tintTheme(Theme, base);
+    const heading = base.fg("mdHeading", `hi ${base.fg("accent", "♡")} there`);
+    const open = base.getFgAnsi("mdHeading");
+    expect(heading).toBe(`${open}hi ${base.getFgAnsi("accent")}♡${open} there\x1b[39m`);
+    restore();
   });
 
   test("the working stalker keeps text aligned and leaves compact tool spinners unchanged at every level", async () => {
     const original = (await getThemeByName("dark")) as Theme;
     expect(Object.keys(STALKER_POSES_BY_LEVEL)).toEqual([...DERE_LEVELS]);
     for (const level of DERE_LEVELS) {
-      const expectedActivity = buildYamiKawaiiTheme(Theme, original, level).getSpinnerFrames("activity");
       for (const preset of ["unicode", "nerd", "ascii"] as const) {
         const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), preset, {});
-        const originalActivity = [...base.getSpinnerFrames("activity")];
-        const stalker = buildYamiKawaiiTheme(Theme, base, level);
-        const frames = stalker.getSpinnerFrames("activity");
+        const activity = [...base.getSpinnerFrames("activity")];
+        const status = [...base.getSpinnerFrames("status")];
+        const restore = tintTheme(Theme, base, level);
+        const frames = base.getSpinnerFrames("activity");
         expect({ level, widths: [...new Set(frames.map(visibleWidth))] }).toEqual({ level, widths: [11] });
         expect(new Set(frames).size).toBeGreaterThan(1);
         expect(new Set(frames.map((frame) => frame.trimEnd().length)).size).toBeGreaterThan(1);
         expect(frames.every((frame) => !/[\r\n\x1b]/.test(frame))).toBe(true);
-        expect(frames).not.toEqual(base.getSpinnerFrames("activity"));
-        expect(stalker.getSpinnerFrames("status")).toEqual(base.getSpinnerFrames("status"));
-        expect(base.getSpinnerFrames("activity")).toEqual(originalActivity);
-        expect(frames).toEqual(expectedActivity);
+        expect(frames).not.toEqual(activity);
+        expect(base.getSpinnerFrames("status")).toEqual(status);
         const poses = STALKER_POSES_BY_LEVEL[level];
-        expect(stalkerPoseAt(stalker, 0)).toBe(poses[0]);
-        expect(stalkerPoseAt(stalker, stalkerPoseMs(level))).toBe(poses[1]);
+        expect(stalkerPoseAt(base, 0)).toBe(poses[0]);
+        expect(stalkerPoseAt(base, stalkerPoseMs(level))).toBe(poses[1]);
+        restore();
+        expect(base.getSpinnerFrames("activity")).toEqual(activity);
+        expect(stalkerPoseAt(base, 0)).toBeUndefined();
       }
     }
     expect(stalkerPoseAt(original, 0)).toBeUndefined();
@@ -129,35 +131,57 @@ describe("blush", () => {
     expect(STALKER_POSE_MS).toBe(stalkerPoseMs("obsessed"));
   });
 
-  test("a level change rebuilds the overlay from the user's theme", async () => {
+  test("the tint keeps the theme's own symbols, unpainted tokens and custom spinners, and undoes itself exactly", async () => {
     const original = (await getThemeByName("dark")) as Theme;
-    const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), "unicode", {}, { activity: ["a", "b"] });
-    let current = base;
-    let installs = 0;
-    const overlay = new YamiKawaiiTheme({ Theme, setThemeInstance: (theme) => { current = theme; installs++; } });
-    overlay.enable(current, "dere");
-    const dere = current;
-    overlay.enable(current, "dere");
-    expect(installs).toBe(1);
-    overlay.enable(current, "yanderu");
-    expect(installs).toBe(2);
-    expect(current).not.toBe(dere);
-    expect(stalkerPoseAt(current, 0)).toBe(STALKER_POSES_BY_LEVEL.yanderu[0]);
-    overlay.disable(current);
-    expect(current).toBe(base);
-    expect(current.getSpinnerFrames("activity")).toEqual(["a", "b"]);
+    const base = new Theme(
+      { text: "#123456", error: "#654321", accent: "#010203" } as ConstructorParameters<typeof Theme>[0],
+      { userMessageBg: "#0a0b0c", toolErrorBg: "#0c0b0a" } as ConstructorParameters<typeof Theme>[1],
+      original.getColorMode(), "unicode", { "nav.cursor": "»" }, { activity: ["a", "b"], status: ["s"] },
+    );
+    const before = { text: base.fg("text", "x"), error: base.getColorHex("error"), toolErrorBg: base.getBgHex("toolErrorBg"), accent: base.getColorHex("accent"), bubble: base.getBgHex("userMessageBg") };
+    const restore = tintTheme(Theme, base, "obsessed");
+    expect(base.nav.cursor).toBe("»");
+    expect(base.getSpinnerFrames("status")).toEqual(["s"]);
+    expect(base.fg("text", "x")).toBe(before.text);
+    expect(base.getColorHex("error")).toBe(before.error);
+    expect(base.getBgHex("toolErrorBg")).toBe(before.toolErrorBg);
+    expect(base.getColorHex("accent")).toBe("#ff4f8b");
+    expect(base.getBgHex("userMessageBg")).toBe("#2b0f1c");
+    restore();
+    expect(Object.getOwnPropertyNames(base).filter((name) => typeof (base as unknown as Record<string, unknown>)[name] === "function")).toEqual([]);
+    expect(base.getColorHex("accent")).toBe(before.accent);
+    expect(base.getBgHex("userMessageBg")).toBe(before.bubble);
+    expect(base.getSpinnerFrames("activity")).toEqual(["a", "b"]);
   });
 
-  test("turning the yandere theme off restores the user's theme and custom activity spinner", async () => {
-    const original = (await getThemeByName("dark")) as Theme;
-    const base = new Theme({} as ConstructorParameters<typeof Theme>[0], {} as ConstructorParameters<typeof Theme>[1], original.getColorMode(), "unicode", {}, { activity: ["a", "b"] });
-    let current = base;
-    const overlay = new YamiKawaiiTheme({ Theme, setThemeInstance: (theme) => { current = theme; } });
-    overlay.enable(current);
-    expect(current.getSpinnerFrames("activity")).not.toEqual(["a", "b"]);
-    overlay.disable(current);
-    expect(current).toBe(base);
-    expect(current.getSpinnerFrames("activity")).toEqual(["a", "b"]);
+  test("the controller follows theme swaps and level changes, and never replaces the theme", async () => {
+    const dark = (await getThemeByName("dark")) as Theme;
+    const light = (await getThemeByName("light")) as Theme;
+    const darkHeading = dark.getColorHex("mdHeading");
+    let binding: ((theme: Theme) => void) | undefined;
+    let current = dark;
+    const previews: string[] = [];
+    const controller = new YamiKawaiiTheme({
+      Theme,
+      bindTheme: (next) => { binding = next; next(current); return () => { binding = undefined; }; },
+      getCurrentThemeName: () => "dark",
+      previewTheme: async (name) => { previews.push(name); return { success: true }; },
+    });
+    controller.enable("dere");
+    controller.enable("dere");
+    expect(previews).toEqual(["dark"]);
+    expect(stalkerPoseAt(dark, 0)).toBe(STALKER_POSES_BY_LEVEL.dere[0]);
+    current = light;
+    binding!(light);
+    expect(stalkerPoseAt(light, 0)).toBe(STALKER_POSES_BY_LEVEL.dere[0]);
+    expect(dark.getColorHex("mdHeading")).toBe(darkHeading);
+    expect(stalkerPoseAt(dark, 0)).toBeUndefined();
+    controller.enable("yanderu");
+    expect(stalkerPoseAt(light, 0)).toBe(STALKER_POSES_BY_LEVEL.yanderu[0]);
+    controller.disable();
+    expect(binding).toBeUndefined();
+    expect(stalkerPoseAt(light, 0)).toBeUndefined();
+    expect(previews).toEqual(["dark", "dark", "dark"]);
   });
 
   test("is deterministic and never changes visible text", () => {

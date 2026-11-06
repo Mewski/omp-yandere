@@ -3,11 +3,11 @@ import { Loader, TUI } from "@oh-my-pi/pi-tui";
 import type { DescribeContext } from "@oh-my-pi/pi-tui/native/node";
 import { Reconciler } from "@oh-my-pi/pi-tui/native/reconcile";
 import { installNativeStalker } from "../src/native-stalker.ts";
-import { buildYamiKawaiiTheme, STALKER_POSE_MS, STALKER_POSES, stalkerPoseAt, stalkerPoseMs } from "../src/theme.ts";
+import { STALKER_POSE_MS, STALKER_POSES, stalkerPoseAt, stalkerPoseMs, tintTheme } from "../src/theme.ts";
 import { Theme } from "@oh-my-pi/pi-coding-agent";
 
-const base = new Theme({} as never, {} as never, "truecolor", "unicode", {});
-const stalkerTheme = buildYamiKawaiiTheme(Theme, base);
+const stalkerTheme = new Theme({} as never, {} as never, "truecolor", "unicode", {});
+tintTheme(Theme, stalkerTheme);
 let installed: { refresh(): void; dispose(): void } | undefined;
 let originalRequest: TUI["requestComponentRender"] | undefined;
 const loaders: Loader[] = [];

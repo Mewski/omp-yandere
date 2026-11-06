@@ -109,8 +109,14 @@ def is_emoji(ch: str) -> bool:
     return ord(ch) >= 0x1F000 or ch in "⛓⚡✨"
 
 
+def glyph_cells(grapheme: str) -> int:
+    if is_zero_width(grapheme[0]):
+        return 0
+    return 2 if "\ufe0f" in grapheme or unicodedata.east_asian_width(grapheme[0]) in "WF" else 1
+
+
 def cell_width(text: str) -> int:
-    return sum(0 if is_zero_width(ch) else 2 if unicodedata.east_asian_width(ch) in "WF" else 1 for ch in text)
+    return sum(glyph_cells(run) for run in grapheme_runs(text))
 
 
 def prose_tokens(line: str, base: str = FG) -> list[Tok]:
@@ -239,7 +245,7 @@ class Canvas:
         for ch in grapheme_runs(text):
             base = ch[0]
             font = self.font_for(base)
-            span = (2 if unicodedata.east_asian_width(base) in "WF" else 1) * self.char_w
+            span = glyph_cells(ch) * self.char_w
             d.text((x, y), ch, font=font, fill=fill, anchor="lm", embedded_color=font is self.emoji)
             x += span if cell or font is not self.font else font.getlength(ch)
         return x

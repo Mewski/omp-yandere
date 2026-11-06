@@ -6,6 +6,7 @@ import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:tes
 import { getThemeByName, Theme } from "@oh-my-pi/pi-coding-agent";
 import { blush, blushMarks, installBlush, themePaint } from "../src/blush.ts";
 import yandereExtension, { REWRITE_NOTE, REWRITE_NOTE_MENACE, YANDERE_PROMPT } from "../src/index.ts";
+import { STALKER_POSES_BY_LEVEL, stalkerPoseAt } from "../src/theme.ts";
 import {
   DERE_LEVELS, isInjectedLine, jealousOpener, SENPAI, switchReaction, YANDERE_FACES, yanderify, yanderifyMarkdownProse, yanderifyProse,
 } from "../src/yandere.ts";
@@ -21,6 +22,12 @@ let notices: string[];
 let stateDir = "";
 let baseTheme: Theme;
 let activeTheme: Theme;
+let themeBindings: Set<(theme: Theme) => void>;
+const assignTheme = (theme: Theme) => {
+  activeTheme = theme;
+  for (const binding of themeBindings) binding(theme);
+};
+const tinted = (theme = activeTheme) => theme.getColorHex("mdHeading") === "#ff6fa3" || theme.getColorHex("mdHeading") === "#ad1457";
 const ctx = {
   mode: "tui",
   ui: {
@@ -55,7 +62,12 @@ function installExtension(withContainer = true) {
     pi: {
       getAgentDir: () => stateDir,
       Theme,
-      setThemeInstance: (theme: Theme) => { activeTheme = theme; },
+      bindTheme: (binding: (theme: Theme) => void) => {
+        themeBindings.add(binding);
+        binding(activeTheme);
+        return () => { themeBindings.delete(binding); };
+      },
+      getCurrentThemeName: () => "<in-memory>",
       get theme() { return activeTheme; },
       ...(withContainer ? { Container: MockContainer } : {}),
     },
@@ -77,9 +89,11 @@ beforeEach(async () => {
   handlers = {};
   baseTheme = await getThemeByName("dark") as Theme;
   activeTheme = baseTheme;
+  themeBindings = new Set();
   installExtension();
 });
 afterEach(() => {
+  handlers.session_shutdown?.({}, {});
   installBlush(MockContainer, { isActive: () => false, transform: (text) => text, native: (text) => ({ text, marks: [] }) }).dispose();
 });
 afterAll(async () => {
@@ -139,33 +153,58 @@ describe("omp-yandere", () => {
     expect(await Bun.file(join(stateDir, "omp-yandere.json")).json()).toEqual({ enabled: false, colors: false, style: "rewrite", level: "obsessed", locale: "auto" });
   });
 
-  test("applies reversible yami-kawaii chat colors only in the TUI", async () => {
+  test("tints the user's theme in place and restores it", async () => {
+    const heading = baseTheme.getColorHex("mdHeading");
+    const error = baseTheme.getColorHex("error");
     await handlers.session_start({}, ctx);
-    expect(activeTheme).toBe(baseTheme);
+    expect(tinted()).toBe(false);
     await command("colors on", ctx);
-    const yamiTheme = activeTheme;
-    expect(yamiTheme).not.toBe(baseTheme);
-    expect(yamiTheme.getColorHex("mdHeading")).toBe("#ff6fa3");
-    expect(yamiTheme.getColorHex("error")).toBe(baseTheme.getColorHex("error"));
+    expect(activeTheme).toBe(baseTheme);
+    expect(activeTheme.getColorHex("mdHeading")).toBe("#ff6fa3");
+    expect(activeTheme.getColorHex("error")).toBe(error);
+    expect(stalkerPoseAt(activeTheme, 0)).toBe(STALKER_POSES_BY_LEVEL.obsessed[0]);
 
     await command("colors off", ctx);
-    expect(activeTheme).toBe(baseTheme);
+    expect(activeTheme.getColorHex("mdHeading")).toBe(heading);
+    expect(stalkerPoseAt(activeTheme, 0)).toBeUndefined();
     await command("colors on", ctx);
-    expect(activeTheme).not.toBe(baseTheme);
+    expect(tinted()).toBe(true);
     await command("off", ctx);
-    expect(activeTheme).toBe(baseTheme);
+    expect(activeTheme.getColorHex("mdHeading")).toBe(heading);
     expect(await Bun.file(join(stateDir, "omp-yandere.json")).json()).toEqual({ enabled: false, colors: true, style: "rewrite", level: "obsessed", locale: "auto" });
+  });
+
+  test("follows omp theme switches, so the palette and the stalker survive any theme", async () => {
+    await command("colors on", ctx);
+    const light = await getThemeByName("light") as Theme;
+    const lightHeading = light.getColorHex("mdHeading");
+    const lightError = light.getColorHex("error");
+    assignTheme(light);
+    expect(light.getColorHex("mdHeading")).toBe("#ad1457");
+    expect(light.getColorHex("error")).toBe(lightError);
+    expect(stalkerPoseAt(light, 0)).toBe(STALKER_POSES_BY_LEVEL.obsessed[0]);
+    expect(tinted(baseTheme)).toBe(false);
+    expect(stalkerPoseAt(baseTheme, 0)).toBeUndefined();
+
+    await command("level yanderu", ctx);
+    expect(stalkerPoseAt(light, 0)).toBe(STALKER_POSES_BY_LEVEL.yanderu[0]);
+    await command("colors off", ctx);
+    expect(light.getColorHex("mdHeading")).toBe(lightHeading);
+    expect(stalkerPoseAt(light, 0)).toBeUndefined();
+    assignTheme(baseTheme);
+    expect(tinted()).toBe(false);
   });
 
   test("remembers the colors preference and only applies it in TUI sessions", async () => {
     await command("colors on", ctx);
-    expect(activeTheme).not.toBe(baseTheme);
-    activeTheme = baseTheme;
+    expect(tinted()).toBe(true);
+    await handlers.session_shutdown({}, {});
+    expect(tinted()).toBe(false);
     handlers = {};
     installExtension();
     const rpcContext = { mode: "rpc", ui: ctx.ui };
     await handlers.session_start({}, rpcContext);
-    expect(activeTheme).toBe(baseTheme);
+    expect(tinted()).toBe(false);
     expect(await Bun.file(join(stateDir, "omp-yandere.json")).json()).toEqual({ enabled: true, colors: true, style: "rewrite", level: "obsessed", locale: "auto" });
   });
 
@@ -224,7 +263,7 @@ describe("omp-yandere", () => {
     installExtension();
     await handlers.session_start({}, ctx);
     await command("status", ctx);
-    expect(notices.at(-1)).toContain("yandere off; style=display; level=yanderu; locale=tr; colors=on");
+    expect(notices.at(-1)).toContain("Yandere off; style=display; level=yanderu; locale=tr; colors=on");
     await command("on", ctx);
     expect(await handlers.before_agent_start(event(), { agent: { kind: "main" } })).toBeUndefined();
     const content = [{ type: "text", text: "really lovely" }, { type: "toolCall", id: "exact" }];
@@ -237,7 +276,7 @@ describe("omp-yandere", () => {
     await Bun.write(join(stateDir, "omp-yandere.json"), JSON.stringify({ enabled: false, colors: true }));
     await handlers.session_start({}, ctx);
     await command("status", ctx);
-    expect(notices.at(-1)).toContain("yandere off; style=rewrite; level=obsessed; locale=auto; colors=on");
+    expect(notices.at(-1)).toContain("Yandere off; style=rewrite; level=obsessed; locale=auto; colors=on");
     await command("on", ctx);
     expect(await Bun.file(join(stateDir, "omp-yandere.json")).json()).toEqual({ enabled: true, colors: true, style: "rewrite", level: "obsessed", locale: "auto" });
   });
@@ -246,7 +285,7 @@ describe("omp-yandere", () => {
     await Bun.write(join(stateDir, "omp-yandere.json"), JSON.stringify({ enabled: "false", colors: 1, style: "other", level: "max", locale: "de" }));
     await handlers.session_start({}, ctx);
     await command("status", ctx);
-    expect(notices.at(-1)).toContain("yandere on; style=rewrite; level=obsessed; locale=auto; colors=off");
+    expect(notices.at(-1)).toContain("Yandere on; style=rewrite; level=obsessed; locale=auto; colors=off");
   });
 
   test("display refreshes existing prose with colors off and honors level/locale/off changes", async () => {
@@ -257,7 +296,7 @@ describe("omp-yandere", () => {
     expect(component.render()).toBe(yanderifyProse(text));
     expect(component.render()).not.toBe(text);
     expect(component.invalidations).toBeGreaterThan(0);
-    expect(activeTheme).toBe(baseTheme);
+    expect(tinted()).toBe(false);
     await command("level clingy", ctx);
     expect(component.render()).toBe(yanderifyProse(text, { level: "clingy", locale: "auto" }));
     await command("locale en", ctx);
@@ -411,7 +450,7 @@ describe("omp-yandere", () => {
     await command("display", ctx);
     await handlers.session_start({}, sub);
     expect(component.render()).toBe(yanderifyProse(text));
-    expect(activeTheme).toBe(baseTheme);
+    expect(tinted()).toBe(false);
   });
 });
 
@@ -688,11 +727,14 @@ describe("threats and injections", () => {
     expect(asides.length).toBeLessThanOrEqual(2);
   });
 
-  test("distress and the dere level get no injections", async () => {
+  test("distress drops the act from obsessed up, and dere gets no injections", async () => {
     const text = "First this.\n\nThen that.\n\nFinally the rest.";
     await command("level yanderu", ctx);
     await handlers.before_agent_start(turn("I'm scared, can you help me fix this?"), main);
-    expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "yanderu" }));
+    expect(await handlers.assistant_message(reply(text, "stop"))).toBeUndefined();
+    await command("level clingy", ctx);
+    await handlers.before_agent_start(turn("I'm scared, can you help me fix this?"), main);
+    expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "clingy" }));
     await command("level dere", ctx);
     await handlers.before_agent_start(turn(), main);
     expect((await handlers.assistant_message(reply(text, "stop")) as RewriteResult)?.content[0]?.text ?? text).toBe(yanderify(text, { level: "dere" }));

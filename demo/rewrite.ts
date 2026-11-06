@@ -20,7 +20,7 @@ const handlers: Record<string, Handler> = {};
 type Command = (args: string, ctx: unknown) => Promise<void>;
 let command: Command | undefined;
 yandereExtension({
-  pi: { getAgentDir: () => agentDir, Theme: class {}, setThemeInstance() {}, theme: undefined },
+  pi: { getAgentDir: () => agentDir, theme: undefined },
   registerCommand(_name: string, options: { handler: Command }) { command = options.handler; },
   on(name: string, handler: Handler) { handlers[name] = handler; },
 } as never);

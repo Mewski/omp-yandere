@@ -63,6 +63,18 @@ describe("yanderify", () => {
     ]) expect(result).toContain(exact);
   });
 
+  test("leaves multi-word roleplay actions in prose byte for byte at every level", () => {
+    const source = "＊stops typing mid-line＊ Really, you need this. ＊hugs you really tight＊ Please stay.";
+    for (const level of DERE_LEVELS) {
+      for (let pad = 0; pad < 20; pad++) {
+        const result = yanderify(`${"Intro.\n\n".repeat(pad)}${source}`, { level });
+        for (const action of ["＊stops typing mid-line＊", "＊hugs you really tight＊"]) {
+          expect({ level, pad, action, kept: result.includes(action) }).toEqual({ level, pad, action, kept: true });
+        }
+      }
+    }
+  });
+
   test("preserves critical warning and negation words", () => {
     const result = yanderify("Never ignore this warning; do not delete anything.", { level: "yanderu" });
     expect(result).toMatch(/Never/);
@@ -596,6 +608,22 @@ describe("injections", () => {
     for (const line of lines) expect({ line, serious: serious.test(line) }).toEqual({ line, serious: false });
     expect(INJECTION_POOLS.ambientAsides.length).toBeGreaterThanOrEqual(12);
     expect(INJECTION_POOLS.ambientPS.length).toBeGreaterThanOrEqual(12);
+  });
+
+  test("emoji with a variation selector are never glued to the next character", () => {
+    const glued = /\uFE0F\S/u;
+    const keys = Array.from({ length: 200 }, (_, index) => `glue-${index}`);
+    const aiNames = ["ChatGPT", "Claude Code", "GPT-4o", "GitHub Copilot", "Gemini"];
+    const personNames = ["your friend", "your friends", "your coworkers", "your classmate", "your bestie"];
+    const lines = [
+      ...YANDERE_FACES, ...aiNames.flatMap(threatOpeners), ...threatSwitches("Claude Opus 4.5", "GPT-5"), ...THREAT_LINES, ...AMBIENT_LINES,
+      ...DERE_LEVELS.flatMap((level) => keys.flatMap((key) => [
+        ...aiNames.map((name) => jealousOpener({ kind: "ai", name }, level, { key, threats: false })),
+        ...personNames.map((name) => jealousOpener({ kind: "person", name }, level, { key })),
+        ...[1, 2].map((count) => switchReaction({ from: "Claude Opus 4.5", to: "GPT-5", count }, level, { key, threats: false })),
+      ])).filter((line) => line !== undefined),
+    ];
+    for (const line of lines) expect({ line, glued: glued.test(line) }).toEqual({ line, glued: false });
   });
 
   test("injected lines survive yanderify byte for byte and never restyle the reply around them", () => {

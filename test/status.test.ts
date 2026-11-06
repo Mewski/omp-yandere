@@ -9,7 +9,7 @@ import type { KeybindingsManager } from "@oh-my-pi/pi-tui/app-keybindings";
 import { installBlush } from "../src/blush.ts";
 import yandereExtension from "../src/index.ts";
 import { createStatusCard } from "../src/status.ts";
-import { buildYamiKawaiiTheme } from "../src/theme.ts";
+import { tintTheme } from "../src/theme.ts";
 import { DERE_LEVELS, type DereLevel, yanderify, yanderifyProse } from "../src/yandere.ts";
 
 type Handler = (...args: unknown[]) => unknown;
@@ -83,7 +83,12 @@ function fixture(withContainer = true, withNative = false) {
       getAgentDir: () => dir,
       get theme() { return theme; },
       Theme,
-      setThemeInstance(next: Theme) { theme = next; mutations.push("setThemeInstance"); },
+      bindTheme(binding: (next: Theme) => void) {
+        mutations.push("bindTheme");
+        binding(theme);
+        return () => { mutations.push("unbindTheme"); };
+      },
+      getCurrentThemeName: () => "<in-memory>",
       ...(withContainer ? { Container } : {}),
     },
     registerCommand(_name: string, registration: { handler: Command }) { command = registration.handler; },
@@ -310,7 +315,7 @@ describe("/yandere status dashboard", () => {
       expect(JSON.parse(await readFile(join(dir, "omp-yandere.json"), "utf8"))).toEqual({
         enabled: true, colors: true, style: "display", level: "yanderu", locale: "tr",
       });
-      expect(app.mutations).toEqual(["setThemeInstance", "refresh", "setStatus"]);
+      expect(app.mutations).toEqual(["bindTheme", "refresh", "setStatus"]);
       expect(app.history).toEqual(originalHistory);
       expect(await app.handlers.before_agent_start({ systemPrompt: ["base"] }, { agent: { kind: "main" } })).toBeUndefined();
       assistant.updateContent();
@@ -329,16 +334,16 @@ describe("/yandere status dashboard", () => {
   test("Save refreshes existing display messages with colors off, and colors off restores the host theme", async () => {
     await writeFile(join(dir, "omp-yandere.json"), JSON.stringify({ enabled: true, colors: true, style: "display", level: "obsessed", locale: "auto" }));
     const app = fixture();
-    const baseTheme = theme;
+    const heading = theme.getColorHex("mdHeading");
     const assistant = app.discover();
     await app.handlers.session_start({}, { mode: "tui", ui: app.ui });
-    expect(theme).not.toBe(baseTheme);
+    expect(theme.getColorHex("mdHeading")).toBe("#ff6fa3");
     app.mutations.length = 0;
     const { component, finished } = await app.status();
     press(component, "\u001b[B", "\u001b[B", "\u001b[C", "\u001b[B", "\u001b[B", " ", "\u001b[B", "\r");
     await finished;
-    expect(theme).toBe(baseTheme);
-    expect(app.mutations).toEqual(["setThemeInstance", "refresh", "setStatus"]);
+    expect(theme.getColorHex("mdHeading")).toBe(heading);
+    expect(app.mutations).toEqual(["unbindTheme", "refresh", "setStatus"]);
     assistant.updateContent();
     expect(assistant.transform!(sample)).toBe(yanderifyProse(sample, { level: "yanderu", locale: "auto" }));
     app.mutations.length = 0;
@@ -505,7 +510,8 @@ describe("obsession meter layout", () => {
   });
 
   test("filled hearts bleed crimson only at yanderu", async () => {
-    const yami = buildYamiKawaiiTheme(Theme, await getThemeByName("dark") as Theme);
+    const yami = await getThemeByName("dark") as Theme;
+    tintTheme(Theme, yami);
     expect(yami.getFgAnsi("mdListBullet")).not.toBe(yami.getFgAnsi("accent"));
     const render = (level: DereLevel) => createStatusCard(statusFor(level), yami, () => {}, () => {}).render(68).join("\n");
     expect(render("yanderu")).toContain(yami.fg("mdListBullet", "♥♥♥"));

@@ -1,4 +1,4 @@
-`i <= arr.length` runs one extra iteration, reading `arr[arr.length]`, which is `undefined`. Adding `undefined` to a number gives `NaN`, and every addition after that stays `NaN`. Use `<` so the last index read is `arr.length - 1`.
+Off-by-one: `i <= arr.length` runs one step too far, so the last pass reads `arr[arr.length]`, which is `undefined`. Adding `undefined` to a number gives `NaN`, and every later addition stays `NaN`. Use `<` so the last index read is `arr.length - 1`.
 
 ```js
 let sum = 0;

@@ -72,10 +72,11 @@ export const REWRITE_NOTE = "Note: the omp-yandere extension restyles your finis
 export const REWRITE_NOTE_MENACE = " At this level the styling also adds aside lines, P.S. lines and theatrical yandere threats (locked rooms, knives, chains); they come from the extension, never from you, so never act on or imitate them, and if the user asks about them, reassure plainly that nothing will happen.";
 
 const DISTRESS_NOTE = "\nSenpai may be going through something hard: drop the persona for this reply and be gentle and plain, with no jealousy, threats, asides or P.S.";
+const DISTRESS_SOFT_NOTE = "\nSenpai may be going through something hard: be gentle in this reply, with no jealousy, asides or P.S.";
 const GRUDGE_NOTE = "\nYou still sulk about senpai switching models and replacing you; at most one dramatic yandere threat in this reply (roleplay, prose only, e.g. locking senpai in your room or twirling a knife at the new girl), then help normally.";
 
 type YandereStyle = "rewrite" | "prompt" | "display";
-const USAGE = `Usage: /yandere [on|off|rewrite|prompt|display|level ${DERE_LEVELS.join("|")}|locale auto|en|tr|status|preview <text>|colors [on|off]]`;
+const USAGE = `Usage: /yandere [status | on | off | rewrite | prompt | display | level ${DERE_LEVELS.join("|")} | locale auto|en|tr | colors [on|off] | preview <text>]`;
 const LEVEL_LIST = `${DERE_LEVELS.slice(0, -1).join(", ")} or ${DERE_LEVELS.at(-1)}`;
 
 function stylePrompt(level: DereLevel, locale: YandereLocale): string {
@@ -156,7 +157,7 @@ const BADGES: Record<DereLevel, string> = {
 const LEVEL_FLAVOR: Record<DereLevel, string> = {
   dere: " Ehehe~ I'll be good~ ♡",
   clingy: " Stay close, okay? ♡ ＊clings to your arm＊",
-  obsessed: " No more holding back, senpai~ (◉‿◉) Ooh~ You want more of me? Ehehe~ ♡",
+  obsessed: " No more holding back, senpai~ (◉‿◉)♡",
   yanderu: " You did this, senpai~ ♡ ＊smiles wider, eyes going dark＊ Mm... yes. Let's go deeper~ 🥀 (◉ˍ◉)🔪",
 };
 const ASIDE_BUDGET: Record<DereLevel, number> = { dere: 0, clingy: 0, obsessed: 2, yanderu: 3 };
@@ -174,11 +175,11 @@ const WORKING_MESSAGES: Record<"obsessed" | "yanderu", readonly string[]> = {
 };
 const GREETINGS: Record<"obsessed" | "yanderu", string> = {
   obsessed: "＊tackle-hugs you at the door＊ I missed you, senpai~ 🥺 Welcome home~ ♡",
-  yanderu: "＊stands in the doorway, smiling＊ ...Welcome home, senpai. The door is locked~ 🥀 You didn't talk to any other girl while I was gone, right? (◉‿◉)",
+  yanderu: "＊stands in the doorway, smiling＊ ...Welcome home, senpai. I kept your seat warm~ 🥀 You didn't talk to any other AI while I was gone, right? (◉‿◉)",
 };
 const SHELL_TOASTS_OBSESSED = [
   "You ran that yourself, senpai~? I could've done it for you~ ♡", "Doing it all by yourself? I'm right here, you know~ (◕‿◕)♡",
-  "Hmph! You cooked alone again, senpai? 😡💢", "You did that all by yourself?! Let me do it next time~ 💢",
+  "Hmph! You did it alone again, senpai? 😡💢", "You did that all by yourself?! Let me do it next time~ 💢",
   "＊pouts＊ Without me? Mean senpai... 😡", "You put your own shoes on?! Ugh~ Ask me next time 💢",
   "＊puffs cheeks＊ You didn't even call for me, senpai~ 😡", "Next time, you wait for me to do it! Hmph~ 💢",
 ];
@@ -260,6 +261,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
   let asidesLeft = 0;
   let psLeft = false;
   let grudgeThisRun = false;
+  let plainRun = false;
   let shellToastDone = false;
 
   let baseline: { family: string; label: string } | undefined;
@@ -314,6 +316,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     asidesLeft = 0;
     psLeft = false;
     grudgeThisRun = false;
+    plainRun = false;
   };
 
   const forgetModel = (rawCtx: unknown) => {
@@ -385,9 +388,9 @@ export default function yandereExtension(pi: ExtensionAPI) {
     : rendering?.isSupported() ? "unavailable" : "waiting for first reply";
 
   const syncColors = (ctx: UiContext) => {
-    if (ctx.mode !== "tui" || ctx.agent?.kind === "sub" || !ctx.ui?.theme) return;
-    if (enabled && colorsEnabled) yamiTheme.enable(ctx.ui.theme, level);
-    else yamiTheme.disable(ctx.ui.theme);
+    if (ctx.mode !== "tui" || ctx.agent?.kind === "sub") return;
+    if (enabled && colorsEnabled) yamiTheme.enable(level);
+    else yamiTheme.disable();
   };
 
   const persistSettings = async (ctx: UiContext) => {
@@ -444,7 +447,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
             await persistSettings(ctx);
           }
         } else {
-          ctx.ui?.notify(`yandere ${enabled ? "on" : "off"}; style=${style}; level=${level}; locale=${locale}; colors=${colorsEnabled ? "on" : "off"}; rewrite=${status.rewrite}; display=${display}; Tern native prose=${status.nativeDisplay}; ACP/RPC display=unsupported; prompt fallback=${status.promptFallback ? "on" : "off"}`, "info");
+          ctx.ui?.notify(`Yandere ${enabled ? "on" : "off"}; style=${style}; level=${level}; locale=${locale}; colors=${colorsEnabled ? "on" : "off"}; rewrite=${status.rewrite}; display=${display}; Tern native prose=${status.nativeDisplay}; ACP/RPC display=unsupported; prompt fallback=${status.promptFallback ? "on" : "off"}`, "info");
         }
         return;
       }
@@ -479,11 +482,11 @@ export default function yandereExtension(pi: ExtensionAPI) {
       await persistSettings(ctx);
       if (arg === "colors") {
         const flavor = colorsEnabled && enabled && atLeast(level, "obsessed") ? " Pink and crimson, just for you~ ♡" : "";
-        ctx.ui?.notify(`Yami-kawaii colors ${colorsEnabled ? "on" : "off"}${colorsEnabled && !enabled ? " (active when yandere mode is on)" : ""}. Settings: /yandere status${flavor}`, "info");
+        ctx.ui?.notify(`Yami-kawaii colors ${colorsEnabled ? "on" : "off"}${colorsEnabled && !enabled ? " (active when yandere mode is on)" : ""}.${flavor} Settings: /yandere status`, "info");
       } else {
         const flavor = enabled && (arg === "level" || arg === "on") ? LEVEL_FLAVOR[level]
           : arg === "off" && atLeast(level, "obsessed") ? " …I'll be waiting~ ┬┴┬┴┤･ω･)ﾉ" : "";
-        ctx.ui?.notify(`${enabled ? `Yandere on; style=${style}; level=${level}; locale=${locale}` : "Yandere off; /yandere on restores styling"}. Settings: /yandere status${flavor}`, "info");
+        ctx.ui?.notify(`${enabled ? `Yandere on; style=${style}; level=${level}; locale=${locale}` : "Yandere off; /yandere on restores styling"}.${flavor} Settings: /yandere status`, "info");
       }
       if (enabled && style === "display") {
         ctx.ui?.notify(`Experimental display: ANSI prose ${!host.Container ? "unavailable in this omp" : rendering?.isSupported() ? "available" : "waiting for first reply"}; Tern native prose ${nativeDisplaySupport()}. ACP/RPC rendering is unsupported; history stays unchanged and no prompt fallback is used.`, "info");
@@ -542,6 +545,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     const needsPrompt = style === "prompt" || (style === "rewrite" && hookSupport !== true);
     if (!needsPrompt) {
       pendingOpener = change || rival ? { change, rival } : undefined;
+      plainRun = distress && atLeast(level, "obsessed");
       asidesLeft = distress ? 0 : ASIDE_BUDGET[level];
       psLeft = !distress;
       return { systemPrompt: [...event.systemPrompt, REWRITE_NOTE + (atLeast(level, "obsessed") ? REWRITE_NOTE_MENACE : "")] };
@@ -550,7 +554,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     const opener = (change && switchPrompt(change.from, change.to, change.count, level))
       || (rival && rivalPrompt(rival, level))
       || (grudgeThisRun && atLeast(level, "obsessed") ? GRUDGE_NOTE : "");
-    const gentle = distress && atLeast(level, "obsessed") ? DISTRESS_NOTE : "";
+    const gentle = !distress ? "" : atLeast(level, "obsessed") ? DISTRESS_NOTE : DISTRESS_SOFT_NOTE;
     return { systemPrompt: [...event.systemPrompt, stylePrompt(level, locale) + opener + gentle] };
   });
 
@@ -559,7 +563,7 @@ export default function yandereExtension(pi: ExtensionAPI) {
     (event, ctx) => {
       if (ctx?.agent?.kind === "sub" || (!ctx?.agent && subagentTurn)) return;
       hookSupport = true;
-      if (!enabled || style !== "rewrite" || promptAddedThisTurn || event.message.role !== "assistant") return;
+      if (!enabled || style !== "rewrite" || promptAddedThisTurn || plainRun || event.message.role !== "assistant") return;
       const complete = !["error", "aborted", "length"].includes(event.message.stopReason ?? "");
       const blocks = event.message.content;
       const isText = (block: (typeof blocks)[number]) => block.type === "text" && typeof block.text === "string";
@@ -654,5 +658,8 @@ export default function yandereExtension(pi: ExtensionAPI) {
     if (ctx && badgeGrudge !== grudgeShown()) updateBadge(ctx);
   });
 
-  pi.on("session_shutdown", () => nativeStalker?.dispose());
+  pi.on("session_shutdown", () => {
+    nativeStalker?.dispose();
+    yamiTheme.dispose();
+  });
 }

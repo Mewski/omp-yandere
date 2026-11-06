@@ -6,7 +6,7 @@ import { renderSegment } from "@oh-my-pi/pi-tui/status-line";
 import type { SegmentContext } from "@oh-my-pi/pi-tui/status-line";
 import { blush, blushMarks, installBlush, themePaint } from "../src/blush.ts";
 import { createStatusCard, type YandereStatus } from "../src/status.ts";
-import { buildYamiKawaiiTheme } from "../src/theme.ts";
+import { tintTheme } from "../src/theme.ts";
 
 type Frame = { key?: string | null; ms: number; lines: readonly string[] };
 
@@ -14,10 +14,10 @@ const transcripts = `${import.meta.dir}/transcripts`;
 const captures = `${import.meta.dir}/captures`;
 const THEME = "dark-sunset";
 
-const base = await getThemeByName(THEME);
-if (!base) throw new Error(`omp theme ${THEME} not found`);
-if (base.getColorMode() !== "truecolor") throw new Error("run with COLORTERM=truecolor so colors match the theme exactly");
-const theme = buildYamiKawaiiTheme(Theme, base);
+const theme = await getThemeByName(THEME);
+if (!theme) throw new Error(`omp theme ${THEME} not found`);
+if (theme.getColorMode() !== "truecolor") throw new Error("run with COLORTERM=truecolor so colors match the theme exactly");
+tintTheme(Theme, theme);
 setThemeInstance(theme);
 const rendering = installBlush(Container, {
   isActive: () => true,
@@ -76,6 +76,7 @@ for (let tick = 0; tick < cycleTicks * 2; tick += 3) {
     now: new Date(tick * 80),
     turnElapsedMs: tick * 80,
     brandFgAnsi: theme.getFgAnsi("accent"),
+    options: {},
   } as SegmentContext;
   stalker.push({ ms: 240, lines: [renderSegment("pi", context).content] });
 }

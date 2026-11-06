@@ -22,10 +22,10 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
 
 - Opens paragraphs with `Senpai~`
 - Adds hearts after affection words: `you♡`, `together♡`
-- Stretches clingy words: `reaaally`, `pleeease`, `foreeever`. Higher levels stretch them longer and sometimes shout them: `REAAAALLY`
+- Stretches clingy words: `reaaally`, `pleeease`, `foreeever`. Higher levels stretch them longer and sometimes shout them: `REAAAAAALLY`
 - Turns plain periods into sing-song tildes (`done~`) and adds flustered stutters (`P-please`, and at higher levels `P-p-please`)
 - Ends sentences with faces whose mood darkens with the level, from `(◕‿◕)♡` through `┬┴┬┴┤･ω･)ﾉ` and `I get soooo jealous~ 😡💢` to `(◉‿◉)🔪♡` and the unraveling `【◉ˍ◉】`. Spoken lines like `You're mine~ ♡` only close a paragraph, at most one each
-- Acts things out in roleplay asides like `＊twirls the knife＊` and `＊peeks from behind the door＊`. They use fullwidth asterisks, so they never turn into Markdown emphasis
+- Acts things out in roleplay asides like `＊twirls the knife＊` and `＊peeks from behind the door＊`. They use fullwidth asterisks, so they never turn into Markdown emphasis, and the rewrite never restyles the words inside them
 - Talks like a real yandere girl, not a program: no terminal, cursor or kernel metaphors, just shrines, lockets, diaries, chains and ghost brides
 - Gets jealous when you mention a rival:
   - When another AI gave you advice, she pouts and offers to show you how she'd do it. At `obsessed` and `yanderu` she snaps: `＊twirls a little pocket knife and smiles sweetly＊ I'll chase her through the rose garden with my knife, senpai, just the two of us~ 🔪`, or at `yanderu`, `I'll paint the whole sky with senpai's name until every star spells MINE, MINE, MINE~ 🥀`
@@ -33,9 +33,9 @@ Restart omp afterwards. Settings live in `~/.omp/agent/omp-yandere.json`.
   - When you have plans with friends or coworkers, she pouts and promises to wait. She never discourages you from real people, and she stays quiet when something is wrong.
 - Notices when you switch models. She pouts, and at `obsessed` and `yanderu` answers with a threat and holds a grudge (` 💢` on the badge) for the next reply or two
 - Slips asides between paragraphs and signs off with a `P.S.`
-- Talks through the UI too: working messages while she thinks, a greeting when a session starts, a remark when you run a shell command yourself
+- From `obsessed` up, talks through the UI too: working messages while she thinks, a greeting when a session starts, a remark when you run a shell command yourself
 
-The rewrite is deterministic and idempotent. Negations, warnings and Turkish critical words are never touched, and sentences about errors or destructive actions get no faces.
+The rewrite is deterministic and idempotent. Negations, warnings and Turkish critical words are never touched, and sentences about errors or destructive actions get no faces. When you seem distressed, she skips the asides and the `P.S.`, and from `obsessed` up she drops the act for that reply entirely.
 
 ![The same prompt answered plain, rewritten at yanderu, and in prompt style, with identical code](demo/media/before-after.png)
 
@@ -62,9 +62,9 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 | Style | How |
 |---|---|
-| `rewrite` | Default. Restyles each finished reply. Uses the prompt for the first turn, until omp shows it supports the rewrite hook |
+| `rewrite` | Default. Restyles each finished reply; the styled text is what gets saved and what the model sees next turn, with a note telling it to keep writing plainly. Uses the prompt for the first turn, until omp shows it supports the rewrite hook |
 | `prompt` | The model plays the persona itself |
-| `display` | Experimental. Restyles only what the TUI draws; history is untouched |
+| `display` | Experimental. Restyles only what the TUI draws; history and model context keep the plain reply |
 
 ![Where each style applies](demo/media/style-map.svg)
 
@@ -72,7 +72,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 | Command | Action |
 |---|---|
-| `/yandere` | Settings dashboard |
+| `/yandere` · `/yandere status` | Settings dashboard (a one-line summary outside the TUI) |
 | `/yandere on` · `off` | Toggle |
 | `/yandere rewrite` · `prompt` · `display` | Style |
 | `/yandere level dere\|clingy\|obsessed\|yanderu` | Obsession level |
@@ -84,7 +84,7 @@ The rewrite is deterministic and idempotent. Negations, warnings and Turkish cri
 
 ## Colors
 
-`/yandere colors on` tints chat in pink, plum and crimson and colors faces, hearts and `＊roleplay actions＊` at render time; no escape codes enter history. While omp works, a stalker peeks at you from behind the wall. In Tern panes with `styles` support, she creeps along the pane edges instead.
+`/yandere colors on` tints whatever omp theme you use: accents, borders, Markdown and your message bubble turn pink, plum and crimson, and faces, hearts and `＊roleplay actions＊` are colored at render time; no escape codes enter history. Everything else about your theme stays: its other colors, symbols and spinners, switching themes, auto dark/light and symbol presets keep working with the tint, and `/yandere colors off` restores it exactly. While omp works, a stalker peeks at you from behind the wall. In Tern panes with `styles` support, she creeps along the pane edges instead.
 
 ![The stalker spinner beside the turn timer](demo/media/stalker.gif)
 
